@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "866550455331",
+    "project_id": "the-yard-hub",
+    "storage_bucket": "the-yard-hub.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:866550455331:android:8e33bba79e5e4aacbca596",
+        "android_client_info": {
+          "package_name": "com.ntech.theyardhub"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9AkFnatLnyYOgswowyQ78TbIrrqPBhdQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
