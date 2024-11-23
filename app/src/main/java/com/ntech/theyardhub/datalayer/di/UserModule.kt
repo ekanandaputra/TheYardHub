@@ -8,7 +8,7 @@ import com.ntech.theyardhub.datalayer.implementation.repository.AuthenticationRe
 import com.ntech.theyardhub.datalayer.repository.AuthenticationRepository
 
 
-object AuthenticationModule {
+object UserModule {
     fun provideAuthRef(): CollectionReference {
         return Firebase.firestore.collection("users")
     }

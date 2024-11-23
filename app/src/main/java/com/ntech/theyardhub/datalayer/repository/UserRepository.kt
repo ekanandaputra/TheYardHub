@@ -5,10 +5,10 @@ import com.ntech.theyardhub.datalayer.model.RegisterRequest
 import com.ntech.theyardhub.datalayer.model.UserModel
 
 
-interface AuthenticationRepository {
+interface UserRepository {
 
-    suspend fun postLogin(username: String, password: String): AppResponse<UserModel>?
+    suspend fun setUserDocumentId(userDocumentId: String)
 
-    suspend fun postRegister(request: RegisterRequest): AppResponse<UserModel>?
+    suspend fun getUserDetail(userDocumentId: String): AppResponse<UserModel>?
 
 }

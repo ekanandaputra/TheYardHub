@@ -1,7 +1,7 @@
 package com.ntech.theyardhub
 
 import android.app.Application
-import com.ntech.weedwhiz.di.appModule
+import com.ntech.theyardhub.di.appModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
 

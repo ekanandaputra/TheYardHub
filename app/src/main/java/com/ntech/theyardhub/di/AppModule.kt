@@ -1,6 +1,6 @@
-package com.ntech.weedwhiz.di
+package com.ntech.theyardhub.di
 
-import com.ntech.theyardhub.datalayer.di.AuthenticationModule
+import com.ntech.theyardhub.datalayer.di.UserModule
 import com.ntech.theyardhub.datalayer.di.ChatModule
 import com.ntech.theyardhub.datalayer.di.PostModule
 import com.ntech.theyardhub.datalayer.di.ProductModule
@@ -8,9 +8,11 @@ import com.ntech.theyardhub.datalayer.implementation.repository.AuthenticationRe
 import com.ntech.theyardhub.datalayer.implementation.repository.ChatRepositoryImpl
 import com.ntech.theyardhub.datalayer.implementation.repository.PostRepositoryImpl
 import com.ntech.theyardhub.datalayer.implementation.repository.ProductRepositoryImpl
+import com.ntech.theyardhub.datalayer.implementation.repository.UserRepositoryImp
 import com.ntech.theyardhub.feature.login.LoginViewModel
 import com.ntech.theyardhub.feature.chat.ChatViewModel
 import com.ntech.theyardhub.feature.detailpost.DetailPostViewModel
+import com.ntech.theyardhub.feature.detailuser.DetailUserViewModel
 import com.ntech.theyardhub.feature.detailyard.DetailYardViewModel
 import com.ntech.theyardhub.feature.login.RegisterViewModel
 import com.ntech.theyardhub.feature.main.MainActivityViewModel
@@ -27,8 +29,8 @@ val appModule = module {
     single { SharedPreference().providePreferenceManager(get()) }
 
     // Auth Collection
-    single(named("AUTH")) { AuthenticationModule.provideAuthRef() }
-    single { AuthenticationModule.provideAuthRepository(get(named("AUTH")), get()) }
+    single(named("AUTH")) { UserModule.provideAuthRef() }
+    single { UserModule.provideAuthRepository(get(named("AUTH")), get()) }
 
     // Chat Collection
     single(named("CHAT")) { ChatModule.provideChatRef() }
@@ -47,6 +49,7 @@ val appModule = module {
     single { ChatRepositoryImpl(get(), get()) }
     single { PostRepositoryImpl(get(), get()) }
     single { ProductRepositoryImpl(get(), get()) }
+    single { UserRepositoryImp(get(), get()) }
 
     // View Model
     factory { LoginViewModel(get()) }
@@ -57,6 +60,7 @@ val appModule = module {
     factory { ProductViewModel(get()) }
     factory { RegisterViewModel(get()) }
     factory { MainActivityViewModel() }
+    factory { DetailUserViewModel(get()) }
 
 
 }

@@ -11,6 +11,7 @@ class DataStorage(sharedPreferences: SharedPreferences) {
         const val KEY_USER_NAME = "KEY_USER_NAME"
         const val KEY_USER_ID = "KEY_USER_ID"
         const val KEY_USER = "KEY_USER"
+        const val KEY_USER_DOCUMENT_ID = "KEY_DOCUMENT_USER_ID"
     }
 
     var userName: String
@@ -39,6 +40,15 @@ class DataStorage(sharedPreferences: SharedPreferences) {
             val gson = Gson()
             val json = gson.toJson(user)
             editor.putString(KEY_USER, value)
+            editor.apply()
+        }
+
+    var userDocumentId: String
+        get() {
+            return pref.getString(KEY_USER_DOCUMENT_ID, "").orEmpty()
+        }
+        set(value) {
+            editor.putString(KEY_USER_DOCUMENT_ID, value)
             editor.apply()
         }
 }

@@ -7,6 +7,7 @@ sealed class BottomNavItem(var title: String, var icon: Int, var screen_route: S
 
     object Home : BottomNavItem("Home", R.drawable.icon, RouteName.HOME_SCREEN)
     object Article : BottomNavItem("Article", R.drawable.icon, RouteName.POST_SCREEN)
-    object Garden : BottomNavItem("Garden", R.drawable.icon, RouteName.GARDEN_SCREEN)
+    object Yard : BottomNavItem("Yard", R.drawable.icon, RouteName.YARD_SCREEN)
+    object Profile : BottomNavItem("Profile", R.drawable.icon, RouteName.DETAIL_USER_SCREEN)
 
 }

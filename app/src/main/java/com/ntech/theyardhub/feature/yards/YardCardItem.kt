@@ -1,4 +1,4 @@
-package com.ntech.theyardhub.feature.post
+package com.ntech.theyardhub.feature.yards
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -35,16 +35,18 @@ import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
 import com.ntech.theyardhub.core.theme.textGray
 import com.ntech.theyardhub.datalayer.model.ChatMessageModel
+import com.ntech.theyardhub.datalayer.model.LocationModel
 import com.ntech.theyardhub.datalayer.model.PostModel
+import com.ntech.theyardhub.datalayer.model.YardModel
 
 @Composable
-fun PostItem(post: PostModel, onClickItem: (PostModel) -> Unit) {
+fun YardCardItem(item: YardModel, onClickItem: (YardModel) -> Unit) {
     Card(
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(White),
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClickItem.invoke(post) },
+            .clickable { onClickItem.invoke(item) },
         elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
     ) {
         Column(
@@ -64,14 +66,14 @@ fun PostItem(post: PostModel, onClickItem: (PostModel) -> Unit) {
                 )
                 Column(modifier = Modifier.padding(start = 10.dp)) {
                     Text(
-                        text = post.title,
+                        text = item.name,
                         style = Typography.titleMedium.copy(
                             color = Black,
                             fontWeight = FontWeight.Bold
                         )
                     )
                     Text(
-                        text = post.content,
+                        text = item.locationModel.city,
                         modifier = Modifier.padding(top = 5.dp),
                         style = Typography.bodyMedium,
                         maxLines = 1,
@@ -86,12 +88,14 @@ fun PostItem(post: PostModel, onClickItem: (PostModel) -> Unit) {
 
 @Preview(showBackground = true)
 @Composable
-fun PostItemPreview() {
-    PostItem(
-        post = PostModel(
+fun YardCardItemPreview() {
+    YardCardItem(
+        item = YardModel(
+            name = "Kebun Anggur Makmur",
             thumbnail = "Ekananda",
-            title = "Percobaan test message",
-            content = "TES",
+            locationModel = LocationModel(
+                city = "Malang"
+            )
         ),
         onClickItem = {}
     )

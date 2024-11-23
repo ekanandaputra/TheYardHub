@@ -7,6 +7,4 @@ import com.ntech.theyardhub.datalayer.model.PostModel
 
 interface YardRepository {
 
-
-
 }

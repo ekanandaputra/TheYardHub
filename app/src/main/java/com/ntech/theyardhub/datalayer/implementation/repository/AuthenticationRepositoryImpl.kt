@@ -17,8 +17,7 @@ import kotlin.coroutines.resumeWithException
 class AuthenticationRepositoryImpl(
     private val authRef: CollectionReference,
     private val dataStorage: DataStorage
-) :
-    AuthenticationRepository {
+) : AuthenticationRepository {
     override suspend fun postLogin(
         username: String,
         password: String
@@ -36,6 +35,9 @@ class AuthenticationRepositoryImpl(
 
                     val userName: String = data.get("name") as? String ?: ""
                     val userUuid: String = data.get("uuid") as? String ?: ""
+
+                    dataStorage.userDocumentId = data.id
+
                     return@withContext AppResponse.Success(
                         UserModel(
                             id = userUuid,
@@ -49,11 +51,6 @@ class AuthenticationRepositoryImpl(
                 return@withContext AppResponse.Error(e.toString())
             }
         }
-    }
-
-    override suspend fun getUsername(): String {
-        dataStorage.userName = "tes"
-        return dataStorage.userName
     }
 
     override suspend fun postRegister(request: RegisterRequest): AppResponse<UserModel>? {

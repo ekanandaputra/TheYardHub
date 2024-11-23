@@ -36,7 +36,8 @@ fun BottomNavigationMenu(
 
     items.add(BottomNavItem.Home)
     items.add(BottomNavItem.Article)
-    items.add(BottomNavItem.Garden)
+    items.add(BottomNavItem.Yard)
+    items.add(BottomNavItem.Profile)
 
     NavigationBar(
         containerColor = bottomNavigationColor,

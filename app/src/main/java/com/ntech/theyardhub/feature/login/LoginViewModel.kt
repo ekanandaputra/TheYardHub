@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.ntech.theyardhub.core.utils.AppResponse
 import com.ntech.theyardhub.datalayer.model.UserModel
 import com.ntech.theyardhub.datalayer.repository.AuthenticationRepository
+import com.ntech.theyardhub.datalayer.repository.UserRepository
 import kotlinx.coroutines.launch
 
 class LoginViewModel(

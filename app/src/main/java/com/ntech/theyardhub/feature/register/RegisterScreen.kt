@@ -1,6 +1,7 @@
 package com.ntech.theyardhub.feature.register
 
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,6 +20,8 @@ import androidx.navigation.NavController
 import com.ntech.theyardhub.core.ButtonHeight
 import com.ntech.theyardhub.core.ButtonType
 import com.ntech.theyardhub.core.RouteName.HOME_SCREEN
+import com.ntech.theyardhub.core.RouteName.LOGIN_SCREEN
+import com.ntech.theyardhub.core.RouteName.SPLASH_SCREEN
 import com.ntech.theyardhub.core.component.GeneralButton
 import com.ntech.theyardhub.core.component.LoadingDialog
 import com.ntech.theyardhub.core.component.RoundedEditField
@@ -84,6 +87,23 @@ fun RegisterScreen(navController: NavController) {
                     containerColor = White
                 )
             )
+        },
+        bottomBar = {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = "Have An Account ? Login Here",
+                    style = Typography.labelMedium,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .clickable {
+                            navController.navigate(LOGIN_SCREEN)
+                        }
+                )
+            }
         },
         containerColor = White
     ) { innerPadding ->

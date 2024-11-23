@@ -21,6 +21,7 @@ import com.ntech.theyardhub.R
 import com.ntech.theyardhub.core.theme.Black
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
+import com.ntech.theyardhub.core.utils.toRupiahFormat
 import com.ntech.theyardhub.datalayer.model.ProductModel
 
 @Composable
@@ -50,7 +51,7 @@ fun ProductItem(product: ProductModel, onClickItem: (ProductModel) -> Unit) {
                 )
             )
             Text(
-                text = product.price.toString(),
+                text = product.price.toRupiahFormat(),
                 modifier = Modifier.padding(top = 5.dp),
                 style = Typography.bodyMedium
             )

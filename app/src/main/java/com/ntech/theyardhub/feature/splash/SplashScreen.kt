@@ -2,12 +2,18 @@ package com.ntech.theyardhub.feature.splash
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
@@ -16,7 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ntech.theyardhub.R
-import com.ntech.theyardhub.core.RouteName.LOGIN_SCREEN
+import com.ntech.theyardhub.core.RouteName.CHAT_LIST_SCREEN
 import com.ntech.theyardhub.core.RouteName.SPLASH_SCREEN
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
@@ -27,11 +33,9 @@ import kotlinx.coroutines.delay
 @Composable
 fun SplashScreen(navController: NavController) {
 
-    val scope = rememberCoroutineScope()
-
     LaunchedEffect(key1 = true) {
         delay(3000L)
-        navController.navigate(LOGIN_SCREEN) {
+        navController.navigate(CHAT_LIST_SCREEN) {
             popUpTo(SPLASH_SCREEN) {
                 inclusive = true
             }
@@ -60,7 +64,7 @@ fun SplashScreen(navController: NavController) {
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Weed Whiz",
+                text = "The Yard Hub",
                 style = Typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold)
             )
         }
