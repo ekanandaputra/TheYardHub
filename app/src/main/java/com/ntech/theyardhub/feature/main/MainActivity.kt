@@ -117,7 +117,8 @@ class MainActivity : ComponentActivity() {
                             currentRoute != REGISTER_SCREEN &&
                             currentRoute != DETAIL_PRODUCT_SCREEN &&
                             currentRoute != CHAT_LIST_SCREEN &&
-                            currentRoute != CREATE_PRODUCT_SCREEN
+                            currentRoute != CREATE_PRODUCT_SCREEN &&
+                            currentRoute != CHAT_SCREEN
                         ) {
                             BottomNavigationMenu(navController = navController,
                                 selectedMenuState = viewModel.selectedMenuState.value,
