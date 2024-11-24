@@ -15,9 +15,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.ntech.theyardhub.core.RouteName
 import com.ntech.theyardhub.core.RouteName.CHAT_LIST_SCREEN
 import com.ntech.theyardhub.core.RouteName.CHAT_SCREEN
+import com.ntech.theyardhub.core.RouteName.CREATE_PRODUCT_SCREEN
 import com.ntech.theyardhub.core.RouteName.DETAIL_POST_SCREEN
 import com.ntech.theyardhub.core.RouteName.DETAIL_PRODUCT_SCREEN
 import com.ntech.theyardhub.core.RouteName.DETAIL_USER_SCREEN
@@ -32,14 +32,14 @@ import com.ntech.theyardhub.core.RouteName.YARD_SCREEN
 import com.ntech.theyardhub.core.theme.TheYardHubTheme
 import com.ntech.theyardhub.core.theme.White
 import com.ntech.theyardhub.feature.bottomnavigation.BottomNavigationMenu
-import com.ntech.theyardhub.feature.login.LoginScreen
 import com.ntech.theyardhub.feature.chat.ChatScreen
-import com.ntech.theyardhub.feature.chatlist.ChatListScreen
+import com.ntech.theyardhub.feature.createproduct.CreateProductScreen
 import com.ntech.theyardhub.feature.detailpost.DetailPostScreen
 import com.ntech.theyardhub.feature.detailproduct.DetailProductScreen
 import com.ntech.theyardhub.feature.detailuser.DetailUserScreen
 import com.ntech.theyardhub.feature.detailyard.DetailYardScreen
 import com.ntech.theyardhub.feature.home.HomeScreen
+import com.ntech.theyardhub.feature.login.LoginScreen
 import com.ntech.theyardhub.feature.post.PostScreen
 import com.ntech.theyardhub.feature.product.ProductScreen
 import com.ntech.theyardhub.feature.register.RegisterScreen
@@ -101,8 +101,8 @@ class MainActivity : ComponentActivity() {
                         composable(DETAIL_PRODUCT_SCREEN) {
                             DetailProductScreen(navController)
                         }
-                        composable(CHAT_LIST_SCREEN) {
-                            ChatListScreen(navController)
+                        composable(CREATE_PRODUCT_SCREEN) {
+                            CreateProductScreen(navController)
                         }
                     }
                     Box(
@@ -116,7 +116,8 @@ class MainActivity : ComponentActivity() {
                             currentRoute != SPLASH_SCREEN &&
                             currentRoute != REGISTER_SCREEN &&
                             currentRoute != DETAIL_PRODUCT_SCREEN &&
-                            currentRoute != CHAT_LIST_SCREEN
+                            currentRoute != CHAT_LIST_SCREEN &&
+                            currentRoute != CREATE_PRODUCT_SCREEN
                         ) {
                             BottomNavigationMenu(navController = navController,
                                 selectedMenuState = viewModel.selectedMenuState.value,
