@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ntech.theyardhub.R
 import com.ntech.theyardhub.core.RouteName.CHAT_LIST_SCREEN
+import com.ntech.theyardhub.core.RouteName.HOME_SCREEN
 import com.ntech.theyardhub.core.RouteName.SPLASH_SCREEN
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
@@ -35,7 +36,7 @@ fun SplashScreen(navController: NavController) {
 
     LaunchedEffect(key1 = true) {
         delay(3000L)
-        navController.navigate(CHAT_LIST_SCREEN) {
+        navController.navigate(HOME_SCREEN) {
             popUpTo(SPLASH_SCREEN) {
                 inclusive = true
             }
