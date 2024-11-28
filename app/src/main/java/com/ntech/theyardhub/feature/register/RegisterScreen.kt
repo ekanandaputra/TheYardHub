@@ -164,7 +164,7 @@ fun RegisterScreen(navController: NavController) {
                             viewModel.doRegister()
                         }
                     },
-                    label = "Login",
+                    label = "Register",
                     buttonType = ButtonType.PRIMARY,
                     buttonHeight = ButtonHeight.MEDIUM,
                     isEnabled = isButtonNextEnable,

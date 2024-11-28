@@ -33,6 +33,7 @@ import com.ntech.theyardhub.core.theme.TheYardHubTheme
 import com.ntech.theyardhub.core.theme.White
 import com.ntech.theyardhub.feature.bottomnavigation.BottomNavigationMenu
 import com.ntech.theyardhub.feature.chat.ChatScreen
+import com.ntech.theyardhub.feature.chatlist.ChatListScreen
 import com.ntech.theyardhub.feature.createproduct.CreateProductScreen
 import com.ntech.theyardhub.feature.detailpost.DetailPostScreen
 import com.ntech.theyardhub.feature.detailproduct.DetailProductScreen
@@ -104,6 +105,9 @@ class MainActivity : ComponentActivity() {
                         composable(CREATE_PRODUCT_SCREEN) {
                             CreateProductScreen(navController)
                         }
+                        composable(CHAT_LIST_SCREEN) {
+                            ChatListScreen(navController)
+                        }
                     }
                     Box(
                         modifier = Modifier
@@ -118,7 +122,8 @@ class MainActivity : ComponentActivity() {
                             currentRoute != DETAIL_PRODUCT_SCREEN &&
                             currentRoute != CHAT_LIST_SCREEN &&
                             currentRoute != CREATE_PRODUCT_SCREEN &&
-                            currentRoute != CHAT_SCREEN
+                            currentRoute != CHAT_SCREEN &&
+                            currentRoute != DETAIL_POST_SCREEN
                         ) {
                             BottomNavigationMenu(navController = navController,
                                 selectedMenuState = viewModel.selectedMenuState.value,
