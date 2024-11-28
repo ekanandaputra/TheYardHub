@@ -21,6 +21,7 @@ import com.ntech.theyardhub.feature.login.RegisterViewModel
 import com.ntech.theyardhub.feature.main.MainActivityViewModel
 import com.ntech.theyardhub.feature.post.PostViewModel
 import com.ntech.theyardhub.feature.product.ProductViewModel
+import com.ntech.theyardhub.feature.yards.YardViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -70,4 +71,5 @@ val appModule = module {
     factory { MainActivityViewModel() }
     factory { DetailUserViewModel(get()) }
     factory { HomeViewModel(get(), get()) }
+    factory { YardViewModel(get()) }
 }
