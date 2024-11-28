@@ -1,5 +1,6 @@
 package com.ntech.theyardhub.feature.register
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -33,6 +34,7 @@ import com.ntech.theyardhub.feature.login.RegisterViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
 
+@SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(navController: NavController) {
@@ -61,6 +63,12 @@ fun RegisterScreen(navController: NavController) {
 
         is AppResponse.Success -> {
             showDialog.value = false
+            Toast.makeText(
+                mContext,
+                "Sucessfully Create Account",
+                Toast.LENGTH_SHORT
+            ).show()
+            navController.navigate(LOGIN_SCREEN)
         }
 
         is AppResponse.Error -> {

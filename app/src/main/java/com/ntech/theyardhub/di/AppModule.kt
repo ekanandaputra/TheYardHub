@@ -4,16 +4,19 @@ import com.ntech.theyardhub.datalayer.di.UserModule
 import com.ntech.theyardhub.datalayer.di.ChatModule
 import com.ntech.theyardhub.datalayer.di.PostModule
 import com.ntech.theyardhub.datalayer.di.ProductModule
+import com.ntech.theyardhub.datalayer.di.YardModule
 import com.ntech.theyardhub.datalayer.implementation.repository.AuthenticationRepositoryImpl
 import com.ntech.theyardhub.datalayer.implementation.repository.ChatRepositoryImpl
 import com.ntech.theyardhub.datalayer.implementation.repository.PostRepositoryImpl
 import com.ntech.theyardhub.datalayer.implementation.repository.ProductRepositoryImpl
 import com.ntech.theyardhub.datalayer.implementation.repository.UserRepositoryImp
+import com.ntech.theyardhub.datalayer.implementation.repository.YardRepositoryImp
 import com.ntech.theyardhub.feature.login.LoginViewModel
 import com.ntech.theyardhub.feature.chat.ChatViewModel
 import com.ntech.theyardhub.feature.detailpost.DetailPostViewModel
 import com.ntech.theyardhub.feature.detailuser.DetailUserViewModel
 import com.ntech.theyardhub.feature.detailyard.DetailYardViewModel
+import com.ntech.theyardhub.feature.home.HomeViewModel
 import com.ntech.theyardhub.feature.login.RegisterViewModel
 import com.ntech.theyardhub.feature.main.MainActivityViewModel
 import com.ntech.theyardhub.feature.post.PostViewModel
@@ -36,7 +39,7 @@ val appModule = module {
     single(named("CHAT")) { ChatModule.provideChatRef() }
     single { ChatModule.provideChatRepository(get(named("CHAT")), get()) }
 
-    // Chat Collection
+    // Post Collection
     single(named("POST")) { PostModule.providePostRef() }
     single { PostModule.providePostRepository(get(named("POST")), get()) }
 
@@ -44,12 +47,17 @@ val appModule = module {
     single(named("PRODUCT")) { ProductModule.provideProductRef() }
     single { ProductModule.provideProductRepository(get(named("PRODUCT")), get()) }
 
+    // Yard Collection
+    single(named("YARD")) { YardModule.provideYardRef() }
+    single { YardModule.provideYardRepository(get(named("YARD")), get()) }
+
     // Repository
     single { AuthenticationRepositoryImpl(get(), get()) }
     single { ChatRepositoryImpl(get(), get()) }
     single { PostRepositoryImpl(get(), get()) }
     single { ProductRepositoryImpl(get(), get()) }
     single { UserRepositoryImp(get(), get()) }
+    single { YardRepositoryImp(get(), get()) }
 
     // View Model
     factory { LoginViewModel(get()) }
@@ -61,6 +69,5 @@ val appModule = module {
     factory { RegisterViewModel(get()) }
     factory { MainActivityViewModel() }
     factory { DetailUserViewModel(get()) }
-
-
+    factory { HomeViewModel(get(), get()) }
 }

@@ -37,6 +37,7 @@ class AuthenticationRepositoryImpl(
                     val userUuid: String = data.get("uuid") as? String ?: ""
 
                     dataStorage.userDocumentId = data.id
+                    dataStorage.userName = userName
 
                     return@withContext AppResponse.Success(
                         UserModel(

@@ -51,6 +51,9 @@ import org.koin.androidx.compose.get
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
+
         setContent {
 
             val viewModel: MainActivityViewModel = get()

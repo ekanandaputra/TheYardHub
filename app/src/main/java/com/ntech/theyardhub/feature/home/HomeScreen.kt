@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -28,8 +29,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,7 +39,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -49,18 +49,61 @@ import com.ntech.theyardhub.core.theme.Gray
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
 import com.ntech.theyardhub.core.theme.bluePrimary
+import com.ntech.theyardhub.core.utils.AppResponse
 import com.ntech.theyardhub.core.utils.RoundedImageExample
 import com.ntech.theyardhub.datalayer.model.LocationModel
 import com.ntech.theyardhub.datalayer.model.PostModel
 import com.ntech.theyardhub.datalayer.model.YardModel
+import org.koin.androidx.compose.get
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
 
-    val usernameState = remember { mutableStateOf(TextFieldValue("")) }
-    val passwordState = remember { mutableStateOf(TextFieldValue("")) }
+    var itemsList = arrayListOf<PostModel>()
+    var yardList = arrayListOf<YardModel>()
+
+    val viewModel: HomeViewModel = get()
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchPosts()
+        viewModel.fetchYards()
+    }
+
+    val postState = viewModel.postLiveData.observeAsState().value
+
+    when (postState) {
+        is AppResponse.Loading -> {
+        }
+
+        is AppResponse.Empty -> {
+        }
+
+        is AppResponse.Success -> {
+            itemsList = postState.data as ArrayList<PostModel>
+        }
+
+        else -> {
+        }
+    }
+
+    val yardState = viewModel.yardLiveData.observeAsState().value
+
+    when (yardState) {
+        is AppResponse.Loading -> {
+        }
+
+        is AppResponse.Empty -> {
+        }
+
+        is AppResponse.Success -> {
+            yardList = yardState.data as ArrayList<YardModel>
+        }
+
+        else -> {
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -109,9 +152,9 @@ fun HomeScreen(navController: NavController) {
         ) {
             HeaderHome()
             Spacer(modifier = Modifier.height(32.dp))
-            ProductHome()
+            ProductHome(yardList)
             Spacer(modifier = Modifier.height(32.dp))
-            ArticleHome()
+            ArticleHome(itemsList)
         }
     }
 }
@@ -135,7 +178,7 @@ fun HeaderHome() {
 }
 
 @Composable
-fun ArticleHome() {
+fun ArticleHome(itemsList: ArrayList<PostModel>) {
     Column {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -146,33 +189,21 @@ fun ArticleHome() {
             Text(text = "See all article", style = Typography.labelSmall)
         }
         Spacer(modifier = Modifier.height(8.dp))
-        ArticleHomeItem(
-            PostModel(
-                title = "MANFAAT TRICHODERMA SP & CARA PEMBIAKKANNYA",
-                content = "Pupuk Bioligis dan Biofungisida Trichoderma, sp Ketergantungan kita terhadap bahan-bahan kimia (pupuk kimia) apalagi bahan yang bersifat racun (insektisida, fungisida, bakterisida) harus segera kita tinggalkan. Kita harus menggali bahan-bahan disekitar kita yang bisa kita manfaatkan untuk mengga"
-            )
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        ArticleHomeItem(
-            PostModel(
-                title = "MANFAAT TRICHODERMA SP & CARA PEMBIAKKANNYA",
-                content = "Pupuk Bioligis dan Biofungisida Trichoderma, sp Ketergantungan kita terhadap bahan-bahan kimia (pupuk kimia) apalagi bahan yang bersifat racun (insektisida, fungisida, bakterisida) harus segera kita tinggalkan. Kita harus menggali bahan-bahan disekitar kita yang bisa kita manfaatkan untuk mengga"
-            )
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        ArticleHomeItem(
-            PostModel(
-                title = "MANFAAT TRICHODERMA SP & CARA PEMBIAKKANNYA",
-                content = "Pupuk Bioligis dan Biofungisida Trichoderma, sp Ketergantungan kita terhadap bahan-bahan kimia (pupuk kimia) apalagi bahan yang bersifat racun (insektisida, fungisida, bakterisida) harus segera kita tinggalkan. Kita harus menggali bahan-bahan disekitar kita yang bisa kita manfaatkan untuk mengga"
-            )
-        )
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            items(itemsList.size) { item ->
+                ArticleHomeItem(
+                    post = itemsList[item],
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+        }
     }
 }
 
 @Composable
-fun ProductHome() {
-    val data: List<YardModel> = generateYardModels()
-
+fun ProductHome(yardList: ArrayList<YardModel>) {
     Column {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -188,8 +219,8 @@ fun ProductHome() {
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
-            items(data.size) { index ->
-                YardHomeItem(item = data[index], onClickItem = {})
+            items(yardList.size) { index ->
+                YardHomeItem(item = yardList[index], onClickItem = {})
             }
         }
     }
@@ -206,11 +237,14 @@ fun ArticleHomeItem(post: PostModel = PostModel()) {
             .padding(8.dp)
     ) {
         Row(modifier = Modifier.padding(8.dp)) {
-            val image: Painter = painterResource(id = R.drawable.icon)
-            Image(
-                painter = image,
-                contentDescription = "App Logo",
-                modifier = Modifier.size(72.dp)
+            AsyncImage(
+                model = "https://images-squarespace--cdn-com.translate.goog/content/v1/552ed2d1e4b0745abca6723d/3e60e68a-5ee9-4f49-9261-e890a6673173/grape+3.jpg?format=2500w&_x_tr_sl=en&_x_tr_tl=id&_x_tr_hl=id&_x_tr_pto=tc",
+                contentDescription = "Image from URL",
+                modifier = Modifier
+                    .width(75.dp)
+                    .height(75.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.FillHeight
             )
             Column(
                 modifier = Modifier
