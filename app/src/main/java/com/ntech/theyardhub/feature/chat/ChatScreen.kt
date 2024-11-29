@@ -35,7 +35,7 @@ fun ChatScreen(navController: NavController) {
     val coroutineScope = rememberCoroutineScope()
     val viewModel: ChatViewModel = get()
     val mContext = LocalContext.current
-    val itemsList: List<ChatMessageModel> = populateData()
+    val itemsList: List<ChatMessageModel> = emptyList()
 
 //    LaunchedEffect(Unit) {
 //        viewModel.fetchHistory()
@@ -76,7 +76,7 @@ fun ChatScreen(navController: NavController) {
                             contentDescription = "Chevron Left"
                         )
                         Text(
-                            "Farmer1",
+                            "Kebun Anggur Makmur",
                             modifier = Modifier.padding(start = 8.dp),
                             style = Typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold)
                         )

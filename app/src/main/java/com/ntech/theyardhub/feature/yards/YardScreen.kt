@@ -27,6 +27,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ntech.theyardhub.R
+import com.ntech.theyardhub.core.RouteName.DETAIL_POST_SCREEN
+import com.ntech.theyardhub.core.RouteName.DETAIL_YARD_SCREEN
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
 import com.ntech.theyardhub.core.utils.AppResponse
@@ -106,7 +108,11 @@ fun YardScreen(navController: NavController) {
                 items(yardList.size) { item ->
                     YardCardItem(
                         item = yardList[item],
-                        onClickItem = {}
+                        onClickItem = {
+                            navController.navigate(
+                                DETAIL_YARD_SCREEN
+                            )
+                        }
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                 }

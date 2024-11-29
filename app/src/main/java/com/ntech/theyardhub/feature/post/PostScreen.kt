@@ -21,6 +21,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ntech.theyardhub.R
+import com.ntech.theyardhub.core.RouteName.DETAIL_POST_SCREEN
+import com.ntech.theyardhub.core.RouteName.LOGIN_SCREEN
 import com.ntech.theyardhub.core.component.LoadingDialog
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
@@ -108,7 +110,9 @@ fun PostScreen(navController: NavController) {
                 items(itemsList.size) { item ->
                     PostItem(
                         post = itemsList[item],
-                        onClickItem = {}
+                        onClickItem = {
+                            navController.navigate(DETAIL_POST_SCREEN)
+                        }
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                 }

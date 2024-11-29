@@ -20,6 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ntech.theyardhub.core.ButtonHeight
 import com.ntech.theyardhub.core.ButtonType
+import com.ntech.theyardhub.core.RouteName.CHAT_SCREEN
+import com.ntech.theyardhub.core.RouteName.DETAIL_POST_SCREEN
 import com.ntech.theyardhub.core.component.GeneralButton
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
@@ -32,7 +34,12 @@ import com.ntech.theyardhub.datalayer.model.ProductModel
 @Composable
 fun DetailProductScreen(navController: NavController) {
 
-    var product = ProductModel("", "Paket A", "Nikmati keindahan alam dan manisnya hasil panen dari Kebun Anggur Kami! Kami menyediakan berbagai jenis anggur berkualitas tinggi yang tumbuh dengan cinta dan perhatian. Anggur kami ditanam secara organik di tanah subur, dengan metode ramah lingkungan untuk memastikan rasa yang terbaik dan kemurnian alami.", 12000000)
+    var product = ProductModel(
+        "",
+        "Paket A",
+        "Nikmati keindahan alam dan manisnya hasil panen dari Kebun Anggur Kami! Kami menyediakan berbagai jenis anggur berkualitas tinggi yang tumbuh dengan cinta dan perhatian. Anggur kami ditanam secara organik di tanah subur, dengan metode ramah lingkungan untuk memastikan rasa yang terbaik dan kemurnian alami.",
+        12000000
+    )
 
     Scaffold(
         containerColor = White,
@@ -46,6 +53,9 @@ fun DetailProductScreen(navController: NavController) {
                 ) {
                     GeneralButton(
                         onButtonClicked = {
+                            navController.navigate(
+                                CHAT_SCREEN
+                            )
                         },
                         label = "Chat with Owner",
                         buttonType = ButtonType.PRIMARY,

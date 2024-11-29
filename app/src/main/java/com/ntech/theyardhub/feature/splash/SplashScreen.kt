@@ -22,8 +22,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ntech.theyardhub.R
-import com.ntech.theyardhub.core.RouteName.CHAT_LIST_SCREEN
-import com.ntech.theyardhub.core.RouteName.HOME_SCREEN
 import com.ntech.theyardhub.core.RouteName.LOGIN_SCREEN
 import com.ntech.theyardhub.core.RouteName.SPLASH_SCREEN
 import com.ntech.theyardhub.core.theme.Typography

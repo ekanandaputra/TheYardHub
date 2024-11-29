@@ -31,6 +31,8 @@ import androidx.navigation.NavController
 import com.ntech.theyardhub.R
 import com.ntech.theyardhub.core.ButtonHeight
 import com.ntech.theyardhub.core.ButtonType
+import com.ntech.theyardhub.core.RouteName.DETAIL_POST_SCREEN
+import com.ntech.theyardhub.core.RouteName.DETAIL_PRODUCT_SCREEN
 import com.ntech.theyardhub.core.component.GeneralButton
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
@@ -114,7 +116,7 @@ fun DetailYardScreen(navController: NavController) {
                 style = Typography.bodyMedium
             )
             Spacer(modifier = Modifier.height(32.dp))
-            DetailYardProduct()
+            DetailYardProduct(navController)
 
             Box(
                 modifier = Modifier
@@ -135,7 +137,7 @@ fun DetailYardScreen(navController: NavController) {
 }
 
 @Composable()
-fun DetailYardProduct() {
+fun DetailYardProduct(navController: NavController) {
     val user = UserModel(
         id = "user-12345",
         name = "John Doe",
@@ -144,9 +146,9 @@ fun DetailYardProduct() {
     val products = listOf(
         ProductModel(
             uuid = "product-001",
-            name = "Anggur Merah Segar",
+            name = "Paket A",
             description = "Anggur merah segar yang dipanen langsung dari kebun.",
-            price = 8000,
+            price = 12000000,
             user = user,
             userReference = user.id
         ),
@@ -239,7 +241,7 @@ fun DetailYardProduct() {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             horizontalArrangement = Arrangement.spacedBy(24.dp),
-            modifier = Modifier.padding(bottom = 16.dp),
+            modifier = Modifier.padding(bottom = 8.dp),
             userScrollEnabled = false,
         ) {
             items(products.size) { item ->
@@ -248,7 +250,11 @@ fun DetailYardProduct() {
                         .padding(vertical = 20.dp)
                         .fillMaxWidth()
                 ) {
-                    ProductItem(product = products[item], onClickItem = {})
+                    ProductItem(product = products[item], onClickItem = {
+                        navController.navigate(
+                            DETAIL_PRODUCT_SCREEN
+                        )
+                    })
                 }
             }
         }
