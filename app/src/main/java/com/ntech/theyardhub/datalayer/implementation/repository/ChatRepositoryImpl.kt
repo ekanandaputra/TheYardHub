@@ -50,6 +50,36 @@ class ChatRepositoryImpl(
         TODO("Not yet implemented")
     }
 
+    override suspend fun getLatestChats(): AppResponse<List<ChatMessageModel>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val querySnapshot = chatRef.get().await()
+                if (querySnapshot.isEmpty) {
+                    return@withContext AppResponse.Empty
+                } else {
+                    val list = querySnapshot.documents.map { document ->
+                        val dateTime =
+                            (document.get("dateTime") as? Timestamp)?.let { timestampToString(it) }
+                        val sender = document.get("sender") as? String ?: ""
+                        val content = document.get("message") as? String ?: ""
+                        val isMyMessage = sender == "ekananda"
+
+                        ChatMessageModel(
+                            sender = sender,
+                            content = content,
+                            dateTime = dateTime ?: "",
+                            isMyMessage = true,
+                        )
+                    }
+                    return@withContext AppResponse.Success(list)
+                }
+            } catch (e: Exception) {
+                return@withContext AppResponse.Error(e.toString())
+            }
+        }
+
+    }
+
     private fun timestampToString(timestamp: Timestamp): String {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         val date = timestamp.toDate()

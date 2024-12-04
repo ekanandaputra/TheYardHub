@@ -16,6 +16,7 @@ import kotlinx.coroutines.withContext
 
 class ProductRepositoryImpl(
     private val productRef: CollectionReference,
+    private val userRef: CollectionReference,
     private val dataStorage: DataStorage
 ) : ProductRepository {
     override suspend fun getProducts(): AppResponse<List<ProductModel>> {
@@ -48,6 +49,10 @@ class ProductRepositoryImpl(
                 return@withContext AppResponse.Error(e.toString())
             }
         }
+    }
+
+    override suspend fun getUserProducts(): AppResponse<List<ProductModel>> {
+        TODO("Not yet implemented")
     }
 
 }

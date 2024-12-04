@@ -21,8 +21,9 @@ object ProductModule {
 
     fun provideProductRepository(
         postRef: CollectionReference,
+        userRef: CollectionReference,
         dataStorage: DataStorage,
     ): ProductRepository {
-        return ProductRepositoryImpl(postRef, dataStorage)
+        return ProductRepositoryImpl(postRef, userRef, dataStorage)
     }
 }

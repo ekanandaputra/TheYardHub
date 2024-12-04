@@ -10,4 +10,6 @@ interface ProductRepository {
 
     suspend fun getProducts(): AppResponse<List<ProductModel>>
 
+    suspend fun getUserProducts(): AppResponse<List<ProductModel>>
+
 }

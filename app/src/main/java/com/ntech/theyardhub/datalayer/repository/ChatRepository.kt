@@ -10,4 +10,6 @@ interface ChatRepository {
 
     suspend fun sendMessage(message: String): AppResponse<ChatMessageModel>
 
+    suspend fun getLatestChats(): AppResponse<List<ChatMessageModel>>
+
 }

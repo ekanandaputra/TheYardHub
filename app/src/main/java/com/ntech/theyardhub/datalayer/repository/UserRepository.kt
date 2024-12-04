@@ -9,6 +9,6 @@ interface UserRepository {
 
     suspend fun setUserDocumentId(userDocumentId: String)
 
-    suspend fun getUserDetail(userDocumentId: String): AppResponse<UserModel>?
+    suspend fun getUserDetail(): AppResponse<UserModel>?
 
 }

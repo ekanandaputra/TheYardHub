@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -31,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,7 +40,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
@@ -50,12 +54,14 @@ import com.ntech.theyardhub.core.ButtonHeight
 import com.ntech.theyardhub.core.ButtonType
 import com.ntech.theyardhub.core.RouteName
 import com.ntech.theyardhub.core.component.GeneralButton
+import com.ntech.theyardhub.core.component.LoadingDialog
 import com.ntech.theyardhub.core.theme.Black
 import com.ntech.theyardhub.core.theme.Gray
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
 import com.ntech.theyardhub.core.theme.bluePrimary
 import com.ntech.theyardhub.core.theme.textGray
+import com.ntech.theyardhub.core.utils.AppResponse
 import com.ntech.theyardhub.core.utils.LoadImageWithGlide
 import com.ntech.theyardhub.core.utils.RoundedImageExample
 import com.ntech.theyardhub.core.utils.toRupiahFormat
@@ -64,13 +70,52 @@ import com.ntech.theyardhub.datalayer.model.ProductModel
 import com.ntech.theyardhub.datalayer.model.UserModel
 import com.ntech.theyardhub.datalayer.model.YardModel
 import com.ntech.theyardhub.feature.bottomnavigation.BottomNavigationMenu
+import com.ntech.theyardhub.feature.detailpost.DetailPostViewModel
 import com.ntech.theyardhub.feature.detailyard.DetailYardProduct
 import com.ntech.theyardhub.feature.product.ProductItem
+import org.koin.androidx.compose.get
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailUserScreen(navController: NavController) {
+
+    val coroutineScope = rememberCoroutineScope()
+    val viewModel: DetailUserViewModel = get()
+    val mContext = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchDetailUser()
+    }
+
+    val userState = viewModel.userLiveData.observeAsState().value
+
+    val showDialog = remember { mutableStateOf(false) }
+
+    var data = UserModel()
+
+    when (userState) {
+        is AppResponse.Loading -> {
+            showDialog.value = true
+        }
+
+        is AppResponse.Empty -> {
+            showDialog.value = false
+        }
+
+        is AppResponse.Success -> {
+            showDialog.value = false
+            data = userState.data
+        }
+
+        else -> {
+            showDialog.value = false
+        }
+    }
+
+    if (showDialog.value) LoadingDialog(setShowDialog = {})
+
+    val scrollState = rememberScrollState()
 
     Scaffold(
         topBar = {
@@ -111,12 +156,17 @@ fun DetailUserScreen(navController: NavController) {
                     imageUrl = "https://images-squarespace--cdn-com.translate.goog/content/v1/552ed2d1e4b0745abca6723d/3e60e68a-5ee9-4f49-9261-e890a6673173/grape+3.jpg?format=2500w&_x_tr_sl=en&_x_tr_tl=id&_x_tr_hl=id&_x_tr_pto=tc",
                     contentDescription = "",
                     modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp)
+                        .width(80.dp)
+                        .height(80.dp)
                         .clip(CircleShape)
                 )
-                Spacer(modifier = Modifier.height(24.dp))
-                DetailProfile()
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = data.name,
+                    style = Typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                )
+                Spacer(modifier = Modifier.height(32.dp))
+                DetailProfile(data.yard)
             }
 
         }
@@ -124,13 +174,7 @@ fun DetailUserScreen(navController: NavController) {
 }
 
 @Composable
-fun DetailProfile() {
-
-    val detailYard = YardModel(
-        name = "Kebun Anggur Makmur",
-        description = "Perkebunan anggur Makmur terletak di kawasan yang subur dan strategis, dengan pemandangan alam yang mempesona. Dikelola dengan penuh perhatian dan menggunakan metode pertanian yang ramah lingkungan, perkebunan ini menghasilkan anggur berkualitas tinggi yang terkenal akan rasa dan kesegarannya. Dengan berbagai varietas anggur yang ditanam, mulai dari anggur merah hingga anggur putih, setiap tanaman dirawat secara teliti agar dapat menghasilkan buah yang optimal."
-    )
-
+fun DetailProfile(yard: YardModel) {
     Card(
         modifier = Modifier.background(color = White),
         colors = CardDefaults.cardColors(bluePrimary)
@@ -143,7 +187,7 @@ fun DetailProfile() {
             ) {
                 Text(
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    text = detailYard.name,
+                    text = yard.name,
                     style = Typography.titleMedium.copy(color = White)
                 )
                 Text(text = "Edit Data", style = Typography.labelSmall.copy(color = White))
@@ -152,7 +196,7 @@ fun DetailProfile() {
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 modifier = Modifier.padding(horizontal = 16.dp),
-                text = detailYard.description,
+                text = yard.description,
                 style = Typography.bodyMedium.copy(color = White)
             )
             Spacer(modifier = Modifier.height(32.dp))

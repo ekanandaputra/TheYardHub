@@ -1,5 +1,6 @@
 package com.ntech.theyardhub.di
 
+import com.google.firebase.firestore.auth.User
 import com.ntech.theyardhub.datalayer.di.UserModule
 import com.ntech.theyardhub.datalayer.di.ChatModule
 import com.ntech.theyardhub.datalayer.di.PostModule
@@ -33,8 +34,9 @@ val appModule = module {
     single { SharedPreference().providePreferenceManager(get()) }
 
     // Auth Collection
-    single(named("AUTH")) { UserModule.provideAuthRef() }
-    single { UserModule.provideAuthRepository(get(named("AUTH")), get()) }
+    single(named("USER")) { UserModule.provideAuthRef() }
+    single { UserModule.provideAuthRepository(get(named("USER")), get()) }
+    single { UserModule.provideUserRepository(get(named("USER")), get()) }
 
     // Chat Collection
     single(named("CHAT")) { ChatModule.provideChatRef() }
@@ -46,7 +48,13 @@ val appModule = module {
 
     // Chat Collection
     single(named("PRODUCT")) { ProductModule.provideProductRef() }
-    single { ProductModule.provideProductRepository(get(named("PRODUCT")), get()) }
+    single {
+        ProductModule.provideProductRepository(
+            get(named("PRODUCT")),
+            get(named("USER")),
+            get()
+        )
+    }
 
     // Yard Collection
     single(named("YARD")) { YardModule.provideYardRef() }
@@ -56,7 +64,13 @@ val appModule = module {
     single { AuthenticationRepositoryImpl(get(), get()) }
     single { ChatRepositoryImpl(get(), get()) }
     single { PostRepositoryImpl(get(), get()) }
-    single { ProductRepositoryImpl(get(), get()) }
+    single {
+        ProductRepositoryImpl(
+            get(named("PRODUCT")),
+            get(named("USER")),
+            get()
+        )
+    }
     single { UserRepositoryImp(get(), get()) }
     single { YardRepositoryImp(get(), get()) }
 
