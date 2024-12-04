@@ -1,6 +1,5 @@
 package com.ntech.theyardhub.datalayer.implementation.repository
 
-import android.util.Log
 import com.google.firebase.firestore.CollectionReference
 import com.ntech.theyardhub.core.utils.AppResponse
 import com.ntech.theyardhub.core.utils.DataStorage
@@ -26,11 +25,13 @@ class PostRepositoryImpl(
                         val content = document.get("content") as? String ?: ""
                         val title = document.get("title") as? String ?: ""
                         val thumbnail = document.get("thumbnail") as? String ?: ""
+                        val documentId = document.id // Retrieve document ID
 
                         PostModel(
                             title = title,
                             content = content,
-                            thumbnail = thumbnail
+                            thumbnail = thumbnail,
+                            documentId = documentId,
                         )
                     }
                     return@withContext AppResponse.Success(list)
@@ -44,20 +45,20 @@ class PostRepositoryImpl(
     override suspend fun getPost(id: String): AppResponse<PostModel> {
         return withContext(Dispatchers.IO) {
             try {
-                val querySnapshot = postRef.whereEqualTo("id", "1").get().await()
-                if (querySnapshot.isEmpty) {
+                val querySnapshot = postRef.document(id).get().await()
+                if (!querySnapshot.exists()) {
                     return@withContext AppResponse.Empty
                 } else {
-                    val data = querySnapshot.documents[0]
-                    val content = data.get("content") as? String ?: ""
-                    val title = data.get("title") as? String ?: ""
-                    val thumbnail = data.get("thumbnail") as? String ?: ""
+                    val title: String = querySnapshot.getString("title") ?: ""
+                    val content: String = querySnapshot.getString("content") ?: ""
+                    val thumbnail: String = querySnapshot.getString("thumbnail") ?: ""
 
                     return@withContext AppResponse.Success(
                         PostModel(
                             thumbnail = thumbnail,
                             title = title,
-                            content = content
+                            content = content,
+                            documentId = id,
                         )
                     )
                 }

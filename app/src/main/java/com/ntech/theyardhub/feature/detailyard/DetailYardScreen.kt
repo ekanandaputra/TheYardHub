@@ -19,10 +19,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -34,24 +36,62 @@ import com.ntech.theyardhub.core.ButtonType
 import com.ntech.theyardhub.core.RouteName.DETAIL_POST_SCREEN
 import com.ntech.theyardhub.core.RouteName.DETAIL_PRODUCT_SCREEN
 import com.ntech.theyardhub.core.component.GeneralButton
+import com.ntech.theyardhub.core.component.LoadingDialog
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
 import com.ntech.theyardhub.core.theme.bluePrimary
+import com.ntech.theyardhub.core.utils.AppResponse
 import com.ntech.theyardhub.core.utils.LoadImageWithGlide
+import com.ntech.theyardhub.datalayer.model.PostModel
 import com.ntech.theyardhub.datalayer.model.ProductModel
 import com.ntech.theyardhub.datalayer.model.UserModel
 import com.ntech.theyardhub.datalayer.model.YardModel
+import com.ntech.theyardhub.feature.detailpost.DetailPostViewModel
 import com.ntech.theyardhub.feature.product.ProductItem
+import org.koin.androidx.compose.get
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailYardScreen(navController: NavController) {
+fun DetailYardScreen(navController: NavController, yardId: String) {
 
-    val detailYard = YardModel(
-        name = "Kebun Anggur Makmur",
-        description = "Perkebunan anggur Makmur terletak di kawasan yang subur dan strategis, dengan pemandangan alam yang mempesona. Dikelola dengan penuh perhatian dan menggunakan metode pertanian yang ramah lingkungan, perkebunan ini menghasilkan anggur berkualitas tinggi yang terkenal akan rasa dan kesegarannya. Dengan berbagai varietas anggur yang ditanam, mulai dari anggur merah hingga anggur putih, setiap tanaman dirawat secara teliti agar dapat menghasilkan buah yang optimal."
-    )
+    val coroutineScope = rememberCoroutineScope()
+    val viewModel: DetailYardViewModel = get()
+    val mContext = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchYard(yardId)
+    }
+
+    val yardState = viewModel.yardLiveData.observeAsState().value
+
+    val showDialog = remember { mutableStateOf(false) }
+
+    var data = YardModel()
+
+    when (yardState) {
+        is AppResponse.Loading -> {
+            showDialog.value = true
+        }
+
+        is AppResponse.Empty -> {
+            showDialog.value = false
+        }
+
+        is AppResponse.Success -> {
+            showDialog.value = false
+            data = yardState.data
+        }
+
+        else -> {
+            showDialog.value = false
+        }
+    }
+
+    if (showDialog.value) LoadingDialog(setShowDialog = {})
+
+    val scrollState = rememberScrollState()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -62,7 +102,7 @@ fun DetailYardScreen(navController: NavController) {
                             contentDescription = "Chevron Left"
                         )
                         Text(
-                            detailYard.name,
+                            data.name,
                             modifier = Modifier.padding(start = 8.dp),
                             style = Typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold)
                         )
@@ -98,6 +138,7 @@ fun DetailYardScreen(navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(scrollState)
                 .padding(
                     top = innerPadding.calculateTopPadding() + 8.dp,
                 ),
@@ -112,7 +153,7 @@ fun DetailYardScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(32.dp))
             Text(
                 modifier = Modifier.padding(horizontal = 16.dp),
-                text = detailYard.description,
+                text = data.description,
                 style = Typography.bodyMedium
             )
             Spacer(modifier = Modifier.height(32.dp))
@@ -148,7 +189,7 @@ fun DetailYardProduct(navController: NavController) {
             uuid = "product-001",
             name = "Paket A",
             description = "Anggur merah segar yang dipanen langsung dari kebun.",
-            price = 12000000    ,
+            price = 12000000,
             user = user,
             userReference = user.id
         ),
@@ -238,23 +279,36 @@ fun DetailYardProduct(navController: NavController) {
             text = "Product",
             style = Typography.titleLarge
         )
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            horizontalArrangement = Arrangement.spacedBy(24.dp),
-            modifier = Modifier.padding(bottom = 8.dp),
-            userScrollEnabled = false,
-        ) {
-            items(products.size) { item ->
-                Box(
-                    modifier = Modifier
-                        .padding(vertical = 20.dp)
-                        .fillMaxWidth()
-                ) {
-                    ProductItem(product = products[item], onClickItem = {
-                        navController.navigate(
-                            DETAIL_PRODUCT_SCREEN
-                        )
-                    })
+        SimpleGridView(
+            modifier = Modifier.fillMaxWidth(),
+            columns = 2,
+            countOfItems = products.size,
+        ) { index ->
+            ProductItem(product = products[index], onClickItem = {
+                navController.navigate(
+                    DETAIL_PRODUCT_SCREEN
+                )
+            })
+        }
+    }
+}
+
+@Composable
+fun SimpleGridView(
+    modifier: Modifier = Modifier,
+    columns: Int,
+    countOfItems: Int,
+    content: @Composable() (index: Int) -> Unit
+) {
+    val columnAndRowItems = (0..countOfItems).chunked(columns)
+
+    Column(modifier = modifier) {
+        columnAndRowItems.forEach { rowItems ->
+            Row(modifier = Modifier.fillMaxWidth()) {
+                rowItems.forEach { index ->
+                    Box(modifier = Modifier.weight(1f)) {
+                        content(index)
+                    }
                 }
             }
         }

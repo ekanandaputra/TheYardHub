@@ -5,22 +5,22 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ntech.theyardhub.core.utils.AppResponse
-import com.ntech.theyardhub.datalayer.model.PostModel
-import com.ntech.theyardhub.datalayer.repository.PostRepository
+import com.ntech.theyardhub.datalayer.model.YardModel
+import com.ntech.theyardhub.datalayer.repository.YardRepository
 import kotlinx.coroutines.launch
 
 class DetailYardViewModel(
-    private val postRepository: PostRepository,
+    private val yardRepository: YardRepository,
 ) : ViewModel() {
 
-    private val _postLiveData = MutableLiveData<AppResponse<PostModel>>()
-    val postLiveData: LiveData<AppResponse<PostModel>> get() = _postLiveData
+    private val _yardLiveData = MutableLiveData<AppResponse<YardModel>>()
+    val yardLiveData: LiveData<AppResponse<YardModel>> get() = _yardLiveData
 
-    suspend fun fetchPost(id: String) {
+    suspend fun fetchYard(id: String) {
         viewModelScope.launch {
-            _postLiveData.apply {
+            _yardLiveData.apply {
                 postValue(AppResponse.Loading)
-                val result = postRepository.getPost(id)
+                val result = yardRepository.getFarm(id)
                 postValue(result)
             }
         }

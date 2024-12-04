@@ -69,6 +69,7 @@ fun PostScreen(navController: NavController) {
 
     if (showDialog.value) LoadingDialog(setShowDialog = {})
 
+    val postId = 1
 
     Scaffold(
         topBar = {
@@ -111,7 +112,7 @@ fun PostScreen(navController: NavController) {
                     PostItem(
                         post = itemsList[item],
                         onClickItem = {
-                            navController.navigate(DETAIL_POST_SCREEN)
+                            navController.navigate("$DETAIL_POST_SCREEN/${it.documentId}")
                         }
                     )
                     Spacer(modifier = Modifier.height(16.dp))

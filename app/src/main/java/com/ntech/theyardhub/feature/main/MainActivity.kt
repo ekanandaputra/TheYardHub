@@ -11,10 +11,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.ntech.theyardhub.core.RouteName.CHAT_LIST_SCREEN
 import com.ntech.theyardhub.core.RouteName.CHAT_SCREEN
 import com.ntech.theyardhub.core.RouteName.CREATE_PRODUCT_SCREEN
@@ -81,8 +83,16 @@ class MainActivity : ComponentActivity() {
                         composable(POST_SCREEN) {
                             PostScreen(navController)
                         }
-                        composable(DETAIL_POST_SCREEN) {
-                            DetailPostScreen(navController)
+                        composable(
+                            route = "$DETAIL_POST_SCREEN/{postId}",
+                            arguments = listOf(navArgument("postId") {
+                                NavType.StringType.also {
+                                    type = it
+                                }
+                            })
+                        ) { backStackEntry ->
+                            val postId = backStackEntry.arguments?.getString("postId")
+                            DetailPostScreen(navController, postId ?: "")
                         }
                         composable(PRODUCT_SCREEN) {
                             ProductScreen(navController)
@@ -90,8 +100,16 @@ class MainActivity : ComponentActivity() {
                         composable(REGISTER_SCREEN) {
                             RegisterScreen(navController)
                         }
-                        composable(DETAIL_YARD_SCREEN) {
-                            DetailYardScreen(navController)
+                        composable(
+                            route = "$DETAIL_YARD_SCREEN/{yardId}",
+                            arguments = listOf(navArgument("yardId") {
+                                NavType.StringType.also {
+                                    type = it
+                                }
+                            })
+                        ) { backStackEntry ->
+                            val yardId = backStackEntry.arguments?.getString("yardId")
+                            DetailYardScreen(navController, yardId ?: "")
                         }
                         composable(DETAIL_USER_SCREEN) {
                             DetailUserScreen(navController)
@@ -118,15 +136,10 @@ class MainActivity : ComponentActivity() {
                             .fillMaxHeight(),
                         contentAlignment = Alignment.BottomCenter
                     ) {
-                        if (currentRoute != DETAIL_YARD_SCREEN &&
-                            currentRoute != LOGIN_SCREEN &&
-                            currentRoute != SPLASH_SCREEN &&
-                            currentRoute != REGISTER_SCREEN &&
-                            currentRoute != DETAIL_PRODUCT_SCREEN &&
-                            currentRoute != CHAT_LIST_SCREEN &&
-                            currentRoute != CREATE_PRODUCT_SCREEN &&
-                            currentRoute != CHAT_SCREEN &&
-                            currentRoute != DETAIL_POST_SCREEN
+                        if (currentRoute == HOME_SCREEN ||
+                            currentRoute == POST_SCREEN ||
+                            currentRoute == YARD_SCREEN ||
+                            currentRoute == DETAIL_USER_SCREEN
                         ) {
                             BottomNavigationMenu(navController = navController,
                                 selectedMenuState = viewModel.selectedMenuState.value,

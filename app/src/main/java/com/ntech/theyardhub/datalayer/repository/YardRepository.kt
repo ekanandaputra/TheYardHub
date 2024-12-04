@@ -10,4 +10,6 @@ interface YardRepository {
 
     suspend fun getFarms(): AppResponse<List<YardModel>>
 
+    suspend fun getFarm(documentId: String): AppResponse<YardModel>
+
 }

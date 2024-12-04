@@ -29,14 +29,42 @@ class YardRepositoryImp(
                         val name = document.get("name") as? String ?: ""
                         val desc = document.get("desc") as? String ?: ""
                         val city = document.get("city") as? String ?: ""
+                        val documentId = document.id // Retrieve document ID
 
                         YardModel(
                             name = name,
                             description = desc,
-                            locationModel = LocationModel(city = city)
+                            locationModel = LocationModel(city = city),
+                            documentId = documentId,
                         )
                     }
                     return@withContext AppResponse.Success(list)
+                }
+            } catch (e: Exception) {
+                return@withContext AppResponse.Error(e.toString())
+            }
+        }
+    }
+
+    override suspend fun getFarm(documentId: String): AppResponse<YardModel> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val querySnapshot = yardRef.document(documentId).get().await()
+                if (!querySnapshot.exists()) {
+                    return@withContext AppResponse.Empty
+                } else {
+                    val name: String = querySnapshot.getString("name") ?: ""
+                    val desc: String = querySnapshot.getString("desc") ?: ""
+                    val city: String = querySnapshot.getString("city") ?: ""
+
+                    return@withContext AppResponse.Success(
+                        YardModel(
+                            name = name,
+                            description = desc,
+                            locationModel = LocationModel(city = city),
+                            documentId = documentId,
+                        )
+                    )
                 }
             } catch (e: Exception) {
                 return@withContext AppResponse.Error(e.toString())

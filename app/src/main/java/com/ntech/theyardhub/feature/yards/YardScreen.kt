@@ -109,9 +109,7 @@ fun YardScreen(navController: NavController) {
                     YardCardItem(
                         item = yardList[item],
                         onClickItem = {
-                            navController.navigate(
-                                DETAIL_YARD_SCREEN
-                            )
+                            navController.navigate("$DETAIL_YARD_SCREEN/${it.documentId}")
                         }
                     )
                     Spacer(modifier = Modifier.height(16.dp))

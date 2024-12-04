@@ -1,10 +1,13 @@
 package com.ntech.theyardhub.feature.detailpost
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -35,14 +38,14 @@ import org.koin.androidx.compose.get
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailPostScreen(navController: NavController) {
+fun DetailPostScreen(navController: NavController, postId: String) {
 
     val coroutineScope = rememberCoroutineScope()
     val viewModel: DetailPostViewModel = get()
     val mContext = LocalContext.current
 
     LaunchedEffect(Unit) {
-        viewModel.fetchPost("1")
+        viewModel.fetchPost(postId)
     }
 
     val postState = viewModel.postLiveData.observeAsState().value
@@ -71,6 +74,7 @@ fun DetailPostScreen(navController: NavController) {
 
     if (showDialog.value) LoadingDialog(setShowDialog = {})
 
+    val scrollState = rememberScrollState()
 
     Scaffold(
         containerColor = White
@@ -79,6 +83,7 @@ fun DetailPostScreen(navController: NavController) {
             verticalArrangement = Arrangement.Top,
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(scrollState)
         ) {
             LoadImageWithGlide(
                 imageUrl = "https://images-squarespace--cdn-com.translate.goog/content/v1/552ed2d1e4b0745abca6723d/3e60e68a-5ee9-4f49-9261-e890a6673173/grape+3.jpg?format=2500w&_x_tr_sl=en&_x_tr_tl=id&_x_tr_hl=id&_x_tr_pto=tc",

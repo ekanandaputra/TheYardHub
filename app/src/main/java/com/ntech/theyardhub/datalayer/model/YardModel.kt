@@ -5,5 +5,5 @@ data class YardModel(
     val thumbnail: String = "",
     val description: String = "",
     val locationModel: LocationModel = LocationModel(),
-    val uuid: String = "",
+    val documentId: String = "",
 )
