@@ -148,7 +148,7 @@ fun DetailYardProduct(navController: NavController) {
             uuid = "product-001",
             name = "Paket A",
             description = "Anggur merah segar yang dipanen langsung dari kebun.",
-            price = 12000000,
+            price = 12000000    ,
             user = user,
             userReference = user.id
         ),

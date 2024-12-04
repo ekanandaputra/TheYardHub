@@ -44,6 +44,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.ntech.theyardhub.R
+import com.ntech.theyardhub.core.RouteName.CHAT_LIST_SCREEN
+import com.ntech.theyardhub.core.RouteName.DETAIL_YARD_SCREEN
 import com.ntech.theyardhub.core.theme.Black
 import com.ntech.theyardhub.core.theme.Gray
 import com.ntech.theyardhub.core.theme.Typography
@@ -130,7 +132,13 @@ fun HomeScreen(navController: NavController) {
                         Image(
                             painter = sendIcon,
                             contentDescription = "Send Icon",
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clickable {
+                                    navController.navigate(
+                                        CHAT_LIST_SCREEN
+                                    )
+                                }
                         )
                     }
                 },

@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ntech.theyardhub.R
+import com.ntech.theyardhub.core.RouteName
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
 import com.ntech.theyardhub.datalayer.model.ChatMessageModel
@@ -81,7 +82,9 @@ fun ChatListScreen(navController: NavController) {
                 items(itemList.size) { item ->
                     ChatItem(
                         item = itemList[item],
-                        onClickItem = {}
+                        onClickItem = {
+                            navController.navigate(RouteName.CHAT_SCREEN)
+                        }
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                 }
@@ -93,9 +96,9 @@ fun ChatListScreen(navController: NavController) {
 fun generateFakeChatMessages(): List<ChatMessageModel> {
     return listOf(
         ChatMessageModel(
-            sender = "Farmer1",
-            content = "Hello! How can I help you today?",
-            dateTime = "2024-11-23T10:15:00",
+            sender = "Kebun Anggur Batu",
+            content = "Apakah ada yang bisa saya bantu?",
+            dateTime = "2024-11-23T20:15:00",
             isMyMessage = false
         ),
         ChatMessageModel(

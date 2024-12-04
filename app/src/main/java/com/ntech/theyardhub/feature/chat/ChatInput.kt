@@ -2,6 +2,7 @@ package com.ntech.theyardhub.feature.chat
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -51,14 +52,17 @@ fun ChatInput(onSendMessage: (String) -> Unit) {
                 onValueChange = { value ->
                     viewModel.setMessage(value)
                 },
-                hint = "Enter Message",
-                visualTransformation = PasswordVisualTransformation()
+                hint = "Enter Message"
             )
         }
         Image(
             painter = sendIcon,
             contentDescription = "Send Icon",
-            modifier = Modifier.size(32.dp)
+            modifier = Modifier
+                .size(32.dp)
+                .clickable {
+                    onSendMessage.invoke(messageState.text)
+                }
         )
     }
 }

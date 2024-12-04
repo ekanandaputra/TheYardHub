@@ -1,6 +1,7 @@
 package com.ntech.theyardhub.feature.chatlist
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +27,9 @@ fun ChatItem(item: ChatMessageModel, onClickItem: (ChatMessageModel) -> Unit) {
         Modifier
             .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
             .fillMaxWidth()
+            .clickable {
+                onClickItem.invoke(item)
+            }
     ) {
         Row(verticalAlignment = Alignment.Top, modifier = Modifier.padding(bottom = 8.dp)) {
             Text(

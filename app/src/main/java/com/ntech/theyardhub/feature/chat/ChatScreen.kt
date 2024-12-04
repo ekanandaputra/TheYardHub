@@ -1,6 +1,7 @@
 package com.ntech.theyardhub.feature.chat
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +16,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +28,7 @@ import androidx.navigation.NavController
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
 import com.ntech.theyardhub.datalayer.model.ChatMessageModel
+import com.ntech.theyardhub.feature.chatlist.generateFakeChatMessages
 import org.koin.androidx.compose.get
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -35,7 +39,7 @@ fun ChatScreen(navController: NavController) {
     val coroutineScope = rememberCoroutineScope()
     val viewModel: ChatViewModel = get()
     val mContext = LocalContext.current
-    val itemsList: List<ChatMessageModel> = emptyList()
+    val itemsList = remember { mutableStateListOf<ChatMessageModel>() }
 
 //    LaunchedEffect(Unit) {
 //        viewModel.fetchHistory()
@@ -66,6 +70,15 @@ fun ChatScreen(navController: NavController) {
 //
 //    if (showDialog.value) LoadingDialog(setShowDialog = {})
 
+    itemsList.add(
+        ChatMessageModel(
+            sender = "Farmer1",
+            content = "Apakah ada yang bisa saya bantu?",
+            dateTime = "2024-11-23T20:15:00",
+            isMyMessage = false
+        )
+    )
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -76,7 +89,7 @@ fun ChatScreen(navController: NavController) {
                             contentDescription = "Chevron Left"
                         )
                         Text(
-                            "Kebun Anggur Makmur",
+                            "Kebun Anggur Batu",
                             modifier = Modifier.padding(start = 8.dp),
                             style = Typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold)
                         )
@@ -89,9 +102,11 @@ fun ChatScreen(navController: NavController) {
         },
         containerColor = White,
         bottomBar = {
-            ChatInput {
-
+            ChatInput { message ->
+                Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show()
+                itemsList.add(ChatMessageModel(content = message, isMyMessage = true))
             }
+
         }
     ) { innerPadding ->
         Column(
@@ -119,40 +134,5 @@ fun ChatScreen(navController: NavController) {
             }
         }
     }
-}
-
-fun populateData(): List<ChatMessageModel> {
-    return listOf(
-        ChatMessageModel(
-            sender = "Farmer1",
-            content = "Hello! How can I help you today?",
-            dateTime = "2024-11-23T10:15:00",
-            isMyMessage = false
-        ),
-        ChatMessageModel(
-            sender = "Consumer1",
-            content = "Hi! I want to know more about your organic products.",
-            dateTime = "2024-11-23T10:16:00",
-            isMyMessage = true
-        ),
-        ChatMessageModel(
-            sender = "Farmer2",
-            content = "Sure! We have fresh organic vegetables, fruits, and dairy products.",
-            dateTime = "2024-11-23T10:17:00",
-            isMyMessage = false
-        ),
-        ChatMessageModel(
-            sender = "Consumer2",
-            content = "Sounds great! Do you deliver to the city?",
-            dateTime = "2024-11-23T10:18:00",
-            isMyMessage = true
-        ),
-        ChatMessageModel(
-            sender = "Farmer3",
-            content = "Yes, we deliver to the city every weekend. Let me know what you'd like!",
-            dateTime = "2024-11-23T10:19:00",
-            isMyMessage = false
-        )
-    )
 }
 
