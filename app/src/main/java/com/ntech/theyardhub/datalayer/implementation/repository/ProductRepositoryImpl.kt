@@ -52,7 +52,33 @@ class ProductRepositoryImpl(
     }
 
     override suspend fun getUserProducts(): AppResponse<List<ProductModel>> {
-        TODO("Not yet implemented")
+        return withContext(Dispatchers.IO) {
+            try {
+                val querySnapshot =
+                    userRef.document(dataStorage.userDocumentId).collection("products").get()
+                        .await()
+                if (querySnapshot.isEmpty) {
+                    return@withContext AppResponse.Empty
+                } else {
+                    val list = querySnapshot.documents.map { document ->
+                        val name: String = document.getString("name") ?: ""
+                        val desc: String = document.getString("desc") ?: ""
+                        val price: Long = document.getLong("price") ?: 0
+                        val documentId = document.id // Retrieve document ID
+
+                        ProductModel(
+                            name = name,
+                            description = desc,
+                            price = price.toInt(),
+                            documentId = documentId,
+                        )
+                    }
+                    return@withContext AppResponse.Success(list)
+                }
+            } catch (e: Exception) {
+                return@withContext AppResponse.Error(e.toString())
+            }
+        }
     }
 
 }

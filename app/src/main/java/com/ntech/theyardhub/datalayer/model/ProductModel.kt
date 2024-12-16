@@ -7,4 +7,5 @@ data class ProductModel(
     val price: Int = 0,
     val user: UserModel = UserModel(),
     val userReference: String = "",
+    val documentId: String = "",
 )
