@@ -19,33 +19,33 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class CreateProductViewModel(
-    private val storageRepository: StorageRepository
+    private val storageRepository: StorageRepository,
+    private val productRepository: ProductRepository,
 ) : ViewModel() {
 
+    private val _createProductLiveData = MutableLiveData<AppResponse<ProductModel>>()
+    val createProductLiveData: LiveData<AppResponse<ProductModel>> get() = _createProductLiveData
 
-//    suspend fun uploadImageToFirebase(imageUri: Uri) {
-//        try {
-//            val storage = FirebaseStorage.getInstance()
-//            val storageRef = storage.reference
-//            val imageRef =
-//                storageRef.child("images/${System.currentTimeMillis()}.jpg")  // Image path
-//
-//            imageRef.putFile(imageUri).await()  // Upload the image
-////            val downloadUrl = imageRef.downloadUrl.await()  // Get the download URL
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//        }
-//    }
-
-    private val _uploadImageLiveData = MutableLiveData<AppResponse<UploadImageModel>>()
-    val uploadImageLiveData: LiveData<AppResponse<UploadImageModel>> get() = _uploadImageLiveData
-
-    suspend fun uploadImage(imageUri: Uri) {
+    suspend fun uploadImageAndCreateProduct(imageUri: Uri, product: ProductModel) {
         viewModelScope.launch {
-            _uploadImageLiveData.apply {
-                postValue(AppResponse.Loading)
-                val result = storageRepository.uploadImage(imageUri)
-                postValue(result)
+            _createProductLiveData.postValue(AppResponse.Loading)
+            try {
+                // Step 1: Upload Image
+                val uploadResult = storageRepository.uploadImage(imageUri)
+                if (uploadResult is AppResponse.Success) {
+                    val imageUrl = uploadResult.data // Assume `data` contains the image URL
+
+                    // Step 2: Add imageUrl to ProductModel
+                    val updatedProduct = product.copy(imageUrl = imageUrl.publicUrl)
+
+                    // Step 3: Create Product
+                    val createProductResult = productRepository.createUserProduct(updatedProduct)
+                    _createProductLiveData.postValue(createProductResult)
+                } else if (uploadResult is AppResponse.Error) {
+                    _createProductLiveData.postValue(AppResponse.Error(uploadResult.message))
+                }
+            } catch (e: Exception) {
+                _createProductLiveData.postValue(AppResponse.Error(e.message ?: "An unexpected error occurred"))
             }
         }
     }

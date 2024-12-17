@@ -35,9 +35,8 @@ import com.ntech.theyardhub.datalayer.model.ProductModel
 fun DetailProductScreen(navController: NavController) {
 
     var product = ProductModel(
-        "",
         "Paket A",
-        "Nikmati keindahan alam dan manisnya hasil panen dari Kebun Anggur Kami! Kami menyediakan berbagai jenis anggur berkualitas tinggi yang tumbuh dengan cinta dan perhatian. Anggur kami ditanam secara organik di tanah subur, dengan metode ramah lingkungan untuk memastikan rasa yang terbaik dan kemurnian alami.",
+        "Paket A",
         12000000
     )
 

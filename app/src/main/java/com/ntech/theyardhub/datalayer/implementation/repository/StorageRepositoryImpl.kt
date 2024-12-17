@@ -25,13 +25,11 @@ class StorageRepositoryImpl() : StorageRepository {
 
                 val downloadUrl = imageRef.downloadUrl.await()
 
-                Log.d("TAG", "uploadImage: " + downloadUrl.toString())
-
                 return@withContext AppResponse.Success(
                     UploadImageModel(
                         isSuccess = true,
                         message = "Success Upload Image",
-                        publicUrl = "downloadUrl"
+                        publicUrl = downloadUrl.toString()
                     )
                 )
 

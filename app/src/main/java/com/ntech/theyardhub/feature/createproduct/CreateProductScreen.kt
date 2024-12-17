@@ -44,6 +44,7 @@ import com.ntech.theyardhub.core.ButtonType
 import com.ntech.theyardhub.core.component.GeneralButton
 import com.ntech.theyardhub.core.component.RoundedEditField
 import com.ntech.theyardhub.core.theme.White
+import com.ntech.theyardhub.datalayer.model.ProductModel
 import com.ntech.theyardhub.feature.detailuser.DetailUserViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -88,7 +89,12 @@ fun CreateProductScreen(navController: NavController) {
                 GeneralButton(
                     onButtonClicked = {
                         CoroutineScope(Dispatchers.Main).launch {
-                            imageUri?.let { viewModel.uploadImage(it) }
+                            imageUri?.let {
+                                viewModel.uploadImageAndCreateProduct(
+                                    it,
+                                    product = ProductModel("Name", "DESC", 12222, "", "")
+                                )
+                            }
                         }
                     },
                     label = "Create Product",

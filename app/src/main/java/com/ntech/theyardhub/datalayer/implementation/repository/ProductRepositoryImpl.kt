@@ -13,6 +13,8 @@ import com.ntech.theyardhub.datalayer.repository.ProductRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class ProductRepositoryImpl(
     private val productRef: CollectionReference,
@@ -28,18 +30,14 @@ class ProductRepositoryImpl(
                     return@withContext AppResponse.Empty
                 } else {
                     val list = querySnapshot.documents.map { document ->
-                        val uuid = document.get("uuid") as? String ?: ""
+                        val desc = document.get("desc") as? String ?: ""
                         val name = document.get("name") as? String ?: ""
                         val price = document.get("price") as? String ?: ""
-                        val userReference = document.get("userReference") as? String ?: ""
-                        val userName = document.get("user.name") as? String ?: ""
 
                         ProductModel(
-                            uuid = uuid,
                             name = name,
                             price = convertToInt(price) ?: 0,
-                            userReference = userReference,
-                            user = UserModel(name = userName)
+                            description = desc,
                         )
                     }
 
@@ -62,8 +60,9 @@ class ProductRepositoryImpl(
                 } else {
                     val list = querySnapshot.documents.map { document ->
                         val name: String = document.getString("name") ?: ""
-                        val desc: String = document.getString("desc") ?: ""
+                        val desc: String = document.getString("description") ?: ""
                         val price: Long = document.getLong("price") ?: 0
+                        val imageUrl: String = document.getString("imageUrl") ?: ""
                         val documentId = document.id // Retrieve document ID
 
                         ProductModel(
@@ -71,6 +70,7 @@ class ProductRepositoryImpl(
                             description = desc,
                             price = price.toInt(),
                             documentId = documentId,
+                            imageUrl = imageUrl,
                         )
                     }
                     return@withContext AppResponse.Success(list)
@@ -81,4 +81,23 @@ class ProductRepositoryImpl(
         }
     }
 
+    override suspend fun createUserProduct(request: ProductModel): AppResponse<ProductModel> {
+        return withContext(Dispatchers.IO) {
+            try {
+                suspendCoroutine<AppResponse<ProductModel>> { continuation ->
+                    userRef.document(dataStorage.userDocumentId)
+                        .collection("products")
+                        .add(request)
+                        .addOnSuccessListener {
+                            continuation.resume(AppResponse.Success(request))
+                        }
+                        .addOnFailureListener { e ->
+                            continuation.resume(AppResponse.Error(e.toString()))
+                        }
+                }
+            } catch (e: Exception) {
+                AppResponse.Error(e.toString())
+            }
+        }
+    }
 }
