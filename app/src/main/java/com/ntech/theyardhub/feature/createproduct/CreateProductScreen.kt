@@ -1,6 +1,10 @@
 package com.ntech.theyardhub.feature.createproduct
 
 import android.annotation.SuppressLint
+import android.net.Uri
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,24 +24,52 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import com.google.firebase.storage.FirebaseStorage
 import com.ntech.theyardhub.core.ButtonHeight
 import com.ntech.theyardhub.core.ButtonType
 import com.ntech.theyardhub.core.component.GeneralButton
 import com.ntech.theyardhub.core.component.RoundedEditField
 import com.ntech.theyardhub.core.theme.White
+import com.ntech.theyardhub.feature.detailuser.DetailUserViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import org.koin.androidx.compose.get
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateProductScreen(navController: NavController) {
 
+    val viewModel: CreateProductViewModel = get()
+
+    var imageUri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri ->
+            uri?.let {
+                imageUri = it
+            }
+        }
+    )
     Scaffold(
         topBar = {
             TopAppBar(
@@ -55,6 +87,9 @@ fun CreateProductScreen(navController: NavController) {
             ) {
                 GeneralButton(
                     onButtonClicked = {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            imageUri?.let { viewModel.uploadImage(it) }
+                        }
                     },
                     label = "Create Product",
                     buttonType = ButtonType.PRIMARY,
@@ -79,10 +114,23 @@ fun CreateProductScreen(navController: NavController) {
                     .fillMaxWidth()
                     .height(200.dp)
                     .background(Color.LightGray, RoundedCornerShape(8.dp))
-                    .clickable { },
+                    .clickable {
+                        galleryLauncher.launch("image/*")
+                    },
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "Tap to select an image", color = Color.White)
+                if (imageUri != null) {
+                    AsyncImage(
+                        model = imageUri,
+                        contentDescription = "Image from URL",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(8.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Text(text = "Tap to select an image", color = Color.White)
+                }
             }
             Spacer(modifier = Modifier.height(16.dp))
             RoundedEditField(
@@ -112,3 +160,4 @@ fun CreateProductScreen(navController: NavController) {
         }
     }
 }
+

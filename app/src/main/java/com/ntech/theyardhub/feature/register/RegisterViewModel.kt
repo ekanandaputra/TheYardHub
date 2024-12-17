@@ -1,4 +1,4 @@
-package com.ntech.theyardhub.feature.login
+package com.ntech.theyardhub.feature.register
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.input.TextFieldValue

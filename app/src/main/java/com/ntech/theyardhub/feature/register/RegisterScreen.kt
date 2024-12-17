@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -20,17 +19,13 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ntech.theyardhub.core.ButtonHeight
 import com.ntech.theyardhub.core.ButtonType
-import com.ntech.theyardhub.core.RouteName.HOME_SCREEN
 import com.ntech.theyardhub.core.RouteName.LOGIN_SCREEN
-import com.ntech.theyardhub.core.RouteName.SPLASH_SCREEN
 import com.ntech.theyardhub.core.component.GeneralButton
 import com.ntech.theyardhub.core.component.LoadingDialog
 import com.ntech.theyardhub.core.component.RoundedEditField
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
 import com.ntech.theyardhub.core.utils.AppResponse
-import com.ntech.theyardhub.feature.login.LoginViewModel
-import com.ntech.theyardhub.feature.login.RegisterViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
 

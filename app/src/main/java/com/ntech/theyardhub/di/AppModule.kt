@@ -1,24 +1,26 @@
 package com.ntech.theyardhub.di
 
-import com.google.firebase.firestore.auth.User
 import com.ntech.theyardhub.datalayer.di.UserModule
 import com.ntech.theyardhub.datalayer.di.ChatModule
 import com.ntech.theyardhub.datalayer.di.PostModule
 import com.ntech.theyardhub.datalayer.di.ProductModule
+import com.ntech.theyardhub.datalayer.di.StorageModule
 import com.ntech.theyardhub.datalayer.di.YardModule
 import com.ntech.theyardhub.datalayer.implementation.repository.AuthenticationRepositoryImpl
 import com.ntech.theyardhub.datalayer.implementation.repository.ChatRepositoryImpl
 import com.ntech.theyardhub.datalayer.implementation.repository.PostRepositoryImpl
 import com.ntech.theyardhub.datalayer.implementation.repository.ProductRepositoryImpl
+import com.ntech.theyardhub.datalayer.implementation.repository.StorageRepositoryImpl
 import com.ntech.theyardhub.datalayer.implementation.repository.UserRepositoryImp
 import com.ntech.theyardhub.datalayer.implementation.repository.YardRepositoryImp
 import com.ntech.theyardhub.feature.login.LoginViewModel
 import com.ntech.theyardhub.feature.chat.ChatViewModel
+import com.ntech.theyardhub.feature.createproduct.CreateProductViewModel
 import com.ntech.theyardhub.feature.detailpost.DetailPostViewModel
 import com.ntech.theyardhub.feature.detailuser.DetailUserViewModel
 import com.ntech.theyardhub.feature.detailyard.DetailYardViewModel
 import com.ntech.theyardhub.feature.home.HomeViewModel
-import com.ntech.theyardhub.feature.login.RegisterViewModel
+import com.ntech.theyardhub.feature.register.RegisterViewModel
 import com.ntech.theyardhub.feature.main.MainActivityViewModel
 import com.ntech.theyardhub.feature.post.PostViewModel
 import com.ntech.theyardhub.feature.product.ProductViewModel
@@ -60,6 +62,8 @@ val appModule = module {
     single(named("YARD")) { YardModule.provideYardRef() }
     single { YardModule.provideYardRepository(get(named("YARD")), get()) }
 
+    single { StorageModule.provideStorageRepository() }
+
     // Repository
     single { AuthenticationRepositoryImpl(get(), get()) }
     single { ChatRepositoryImpl(get(), get()) }
@@ -73,6 +77,7 @@ val appModule = module {
     }
     single { UserRepositoryImp(get(), get()) }
     single { YardRepositoryImp(get(), get()) }
+    single { StorageRepositoryImpl() }
 
     // View Model
     factory { LoginViewModel(get()) }
@@ -86,4 +91,5 @@ val appModule = module {
     factory { DetailUserViewModel(get(), get()) }
     factory { HomeViewModel(get(), get()) }
     factory { YardViewModel(get()) }
+    factory { CreateProductViewModel(get()) }
 }

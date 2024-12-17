@@ -2,6 +2,7 @@ package com.ntech.theyardhub.feature.detailuser
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -27,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.ntech.theyardhub.core.RouteName
 import com.ntech.theyardhub.core.component.LoadingDialog
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
@@ -148,7 +150,11 @@ fun DetailUserScreen(navController: NavController) {
                     style = Typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                 )
                 Spacer(modifier = Modifier.height(32.dp))
-                DetailProfile(data.yard, products)
+                DetailProfile(
+                    data.yard,
+                    products,
+                    onClickAddProduct = { navController.navigate(RouteName.CREATE_PRODUCT_SCREEN) }
+                )
             }
 
         }
@@ -156,7 +162,11 @@ fun DetailUserScreen(navController: NavController) {
 }
 
 @Composable
-fun DetailProfile(yard: YardModel, products: ArrayList<ProductModel>) {
+fun DetailProfile(
+    yard: YardModel,
+    products: ArrayList<ProductModel>,
+    onClickAddProduct: () -> Unit
+) {
     Card(
         modifier = Modifier.background(color = White),
         colors = CardDefaults.cardColors(bluePrimary)
@@ -182,13 +192,13 @@ fun DetailProfile(yard: YardModel, products: ArrayList<ProductModel>) {
                 style = Typography.bodyMedium.copy(color = White)
             )
             Spacer(modifier = Modifier.height(32.dp))
-            DetailUserProduct(products)
+            DetailUserProduct(products, onClickAddProduct = { onClickAddProduct.invoke() })
         }
     }
 }
 
 @Composable()
-fun DetailUserProduct(products: ArrayList<ProductModel>) {
+fun DetailUserProduct(products: ArrayList<ProductModel>, onClickAddProduct: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -206,7 +216,12 @@ fun DetailUserProduct(products: ArrayList<ProductModel>) {
                 text = "Product",
                 style = Typography.titleMedium.copy(color = White)
             )
-            Text(text = "Add Product", style = Typography.labelSmall.copy(color = White))
+            Text(
+                text = "Add Product",
+                style = Typography.labelSmall.copy(color = White),
+                modifier = Modifier.clickable {
+                    onClickAddProduct.invoke()
+                })
         }
 
         LazyColumn(
