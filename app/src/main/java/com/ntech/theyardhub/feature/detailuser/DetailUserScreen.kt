@@ -29,7 +29,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.ntech.theyardhub.core.ButtonHeight
+import com.ntech.theyardhub.core.ButtonType
 import com.ntech.theyardhub.core.RouteName
+import com.ntech.theyardhub.core.component.GeneralButton
 import com.ntech.theyardhub.core.component.LoadingDialog
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
@@ -40,6 +43,7 @@ import com.ntech.theyardhub.datalayer.model.ProductModel
 import com.ntech.theyardhub.datalayer.model.UserModel
 import com.ntech.theyardhub.datalayer.model.YardModel
 import com.ntech.theyardhub.feature.product.ProductItem
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -151,11 +155,29 @@ fun DetailUserScreen(navController: NavController) {
                     style = Typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                 )
                 Spacer(modifier = Modifier.height(32.dp))
-                DetailProfile(
-                    data.yard,
-                    products,
-                    onClickAddProduct = { navController.navigate(RouteName.CREATE_PRODUCT_SCREEN) }
-                )
+                if (data.yard.name == "") {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        GeneralButton(
+                            onButtonClicked = {
+                                navController.navigate(RouteName.REGISTER_YARD_SCREEN)
+                            },
+                            label = "Register Farm",
+                            buttonType = ButtonType.SECONDARY,
+                            buttonHeight = ButtonHeight.MEDIUM,
+                            isEnabled = true,
+                        )
+                    }
+                } else {
+                    DetailYard(
+                        data.yard,
+                        products,
+                        onClickAddProduct = { navController.navigate(RouteName.CREATE_PRODUCT_SCREEN) },
+                        onClickEditDetailFarm = { navController.navigate(RouteName.REGISTER_YARD_SCREEN) },
+                    )
+                }
             }
 
         }
@@ -163,10 +185,11 @@ fun DetailUserScreen(navController: NavController) {
 }
 
 @Composable
-fun DetailProfile(
+fun DetailYard(
     yard: YardModel,
     products: ArrayList<ProductModel>,
-    onClickAddProduct: () -> Unit
+    onClickAddProduct: () -> Unit,
+    onClickEditDetailFarm: () -> Unit
 ) {
     Card(
         modifier = Modifier.background(color = White),
@@ -175,15 +198,20 @@ fun DetailProfile(
         Column(modifier = Modifier.padding(top = 16.dp)) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    modifier = Modifier.padding(horizontal = 16.dp),
                     text = yard.name,
                     style = Typography.titleMedium.copy(color = White)
                 )
-                Text(text = "Edit Data", style = Typography.labelSmall.copy(color = White))
+                Text(
+                    text = "Edit Data",
+                    style = Typography.labelSmall.copy(color = White),
+                    modifier = Modifier.clickable { onClickEditDetailFarm.invoke() },
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))

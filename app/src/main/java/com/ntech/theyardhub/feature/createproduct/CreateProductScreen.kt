@@ -59,6 +59,9 @@ fun CreateProductScreen(navController: NavController) {
 
     val viewModel: CreateProductViewModel = get()
 
+    val nameState by viewModel.nameState
+    val descriptionState by viewModel.descriptionState
+    val priceState by viewModel.priceState
     var imageUri by remember {
         mutableStateOf<Uri?>(null)
     }
@@ -90,10 +93,7 @@ fun CreateProductScreen(navController: NavController) {
                     onButtonClicked = {
                         CoroutineScope(Dispatchers.Main).launch {
                             imageUri?.let {
-                                viewModel.uploadImageAndCreateProduct(
-                                    it,
-                                    product = ProductModel("Name", "DESC", 12222, "", "")
-                                )
+                                viewModel.uploadImageAndCreateProduct(it)
                             }
                         }
                     },
@@ -140,17 +140,19 @@ fun CreateProductScreen(navController: NavController) {
             }
             Spacer(modifier = Modifier.height(16.dp))
             RoundedEditField(
-                title = "Title",
-                value = TextFieldValue(),
+                title = "Name",
+                value = nameState,
                 onValueChange = { value ->
+                    viewModel.setName(value)
                 },
-                hint = "Enter Title"
+                hint = "Enter Product Name"
             )
             Spacer(modifier = Modifier.height(16.dp))
             RoundedEditField(
                 title = "Description",
-                value = TextFieldValue(),
+                value = descriptionState,
                 onValueChange = { value ->
+                    viewModel.setDescription(value)
                 },
                 hint = "Enter Description",
                 visualTransformation = PasswordVisualTransformation()
@@ -158,8 +160,9 @@ fun CreateProductScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(16.dp))
             RoundedEditField(
                 title = "Price",
-                value = TextFieldValue(),
+                value = priceState,
                 onValueChange = { value ->
+                    viewModel.setPrice(value)
                 },
                 hint = "Enter Price",
             )

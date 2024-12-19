@@ -2,6 +2,8 @@ package com.ntech.theyardhub.feature.createproduct
 
 import android.net.Uri
 import android.widget.Toast
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -23,10 +25,14 @@ class CreateProductViewModel(
     private val productRepository: ProductRepository,
 ) : ViewModel() {
 
+    val nameState = mutableStateOf(TextFieldValue(""))
+    val descriptionState = mutableStateOf(TextFieldValue(""))
+    val priceState = mutableStateOf(TextFieldValue(""))
+
     private val _createProductLiveData = MutableLiveData<AppResponse<ProductModel>>()
     val createProductLiveData: LiveData<AppResponse<ProductModel>> get() = _createProductLiveData
 
-    suspend fun uploadImageAndCreateProduct(imageUri: Uri, product: ProductModel) {
+    suspend fun uploadImageAndCreateProduct(imageUri: Uri) {
         viewModelScope.launch {
             _createProductLiveData.postValue(AppResponse.Loading)
             try {
@@ -36,18 +42,39 @@ class CreateProductViewModel(
                     val imageUrl = uploadResult.data // Assume `data` contains the image URL
 
                     // Step 2: Add imageUrl to ProductModel
-                    val updatedProduct = product.copy(imageUrl = imageUrl.publicUrl)
+                    val request = ProductModel(
+                        name = nameState.value.text,
+                        description = descriptionState.value.text,
+                        price = priceState.value.text.toInt(),
+                        imageUrl = imageUrl.publicUrl,
+                    )
 
                     // Step 3: Create Product
-                    val createProductResult = productRepository.createUserProduct(updatedProduct)
+                    val createProductResult = productRepository.createProduct(request)
                     _createProductLiveData.postValue(createProductResult)
                 } else if (uploadResult is AppResponse.Error) {
                     _createProductLiveData.postValue(AppResponse.Error(uploadResult.message))
                 }
             } catch (e: Exception) {
-                _createProductLiveData.postValue(AppResponse.Error(e.message ?: "An unexpected error occurred"))
+                _createProductLiveData.postValue(
+                    AppResponse.Error(
+                        e.message ?: "An unexpected error occurred"
+                    )
+                )
             }
         }
+    }
+
+    fun setName(newValue: TextFieldValue) {
+        nameState.value = newValue
+    }
+
+    fun setDescription(newValue: TextFieldValue) {
+        descriptionState.value = newValue
+    }
+
+    fun setPrice(newValue: TextFieldValue) {
+        priceState.value = newValue
     }
 
 }

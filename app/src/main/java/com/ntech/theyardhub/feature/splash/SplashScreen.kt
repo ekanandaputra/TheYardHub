@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ntech.theyardhub.R
+import com.ntech.theyardhub.core.RouteName.CREATE_PRODUCT_SCREEN
 import com.ntech.theyardhub.core.RouteName.LOGIN_SCREEN
 import com.ntech.theyardhub.core.RouteName.REGISTER_YARD_SCREEN
 import com.ntech.theyardhub.core.RouteName.SPLASH_SCREEN
@@ -36,7 +37,7 @@ fun SplashScreen(navController: NavController) {
 
     LaunchedEffect(key1 = true) {
         delay(3000L)
-        navController.navigate(REGISTER_YARD_SCREEN) {
+        navController.navigate(LOGIN_SCREEN) {
             popUpTo(SPLASH_SCREEN) {
                 inclusive = true
             }

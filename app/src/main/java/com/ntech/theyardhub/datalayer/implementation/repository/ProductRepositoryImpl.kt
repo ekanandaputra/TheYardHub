@@ -5,9 +5,11 @@ import com.google.firebase.firestore.CollectionReference
 import com.ntech.theyardhub.core.utils.AppResponse
 import com.ntech.theyardhub.core.utils.DataStorage
 import com.ntech.theyardhub.core.utils.convertToInt
+import com.ntech.theyardhub.datalayer.model.LocationModel
 import com.ntech.theyardhub.datalayer.model.PostModel
 import com.ntech.theyardhub.datalayer.model.ProductModel
 import com.ntech.theyardhub.datalayer.model.UserModel
+import com.ntech.theyardhub.datalayer.model.YardModel
 import com.ntech.theyardhub.datalayer.repository.PostRepository
 import com.ntech.theyardhub.datalayer.repository.ProductRepository
 import kotlinx.coroutines.Dispatchers
@@ -99,5 +101,57 @@ class ProductRepositoryImpl(
                 AppResponse.Error(e.toString())
             }
         }
+    }
+
+    override suspend fun createProduct(request: ProductModel): AppResponse<ProductModel> {
+        return withContext(Dispatchers.IO) {
+            try {
+                request.userDocumentId = dataStorage.userDocumentId
+                suspendCoroutine<AppResponse<ProductModel>> { continuation ->
+                    productRef.add(request)
+                        .addOnSuccessListener {
+                            continuation.resume(AppResponse.Success(request))
+                        }
+                        .addOnFailureListener { e ->
+                            continuation.resume(AppResponse.Error(e.toString()))
+                        }
+                }
+            } catch (e: Exception) {
+                AppResponse.Error(e.toString())
+            }
+        }
+    }
+
+    override suspend fun getProductsByUserId(): AppResponse<List<ProductModel>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val querySnapshot =
+                    productRef.whereEqualTo("userDocumentId", dataStorage.userDocumentId).get()
+                        .await()
+                if (querySnapshot.isEmpty) {
+                    return@withContext AppResponse.Empty
+                } else {
+                    val list = querySnapshot.documents.map { document ->
+                        val name: String = document.getString("name") ?: ""
+                        val desc: String = document.getString("description") ?: ""
+                        val price: Long = document.getLong("price") ?: 0
+                        val imageUrl: String = document.getString("imageUrl") ?: ""
+                        val documentId = document.id // Retrieve document ID
+
+                        ProductModel(
+                            name = name,
+                            description = desc,
+                            price = price.toInt(),
+                            documentId = documentId,
+                            imageUrl = imageUrl,
+                        )
+                    }
+                    return@withContext AppResponse.Success(list)
+                }
+            } catch (e: Exception) {
+                return@withContext AppResponse.Error(e.toString())
+            }
+        }
+
     }
 }
