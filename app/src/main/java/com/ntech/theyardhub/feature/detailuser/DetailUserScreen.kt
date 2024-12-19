@@ -226,7 +226,9 @@ fun DetailUserProduct(products: ArrayList<ProductModel>, onClickAddProduct: () -
         }
 
         LazyRow(
-            modifier = Modifier.padding(bottom = 8.dp),
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
             items(products.size) { item ->
                 Box(

@@ -29,6 +29,7 @@ import com.ntech.theyardhub.core.RouteName.LOGIN_SCREEN
 import com.ntech.theyardhub.core.RouteName.POST_SCREEN
 import com.ntech.theyardhub.core.RouteName.PRODUCT_SCREEN
 import com.ntech.theyardhub.core.RouteName.REGISTER_SCREEN
+import com.ntech.theyardhub.core.RouteName.REGISTER_YARD_SCREEN
 import com.ntech.theyardhub.core.RouteName.SPLASH_SCREEN
 import com.ntech.theyardhub.core.RouteName.YARD_SCREEN
 import com.ntech.theyardhub.core.theme.TheYardHubTheme
@@ -46,6 +47,7 @@ import com.ntech.theyardhub.feature.login.LoginScreen
 import com.ntech.theyardhub.feature.post.PostScreen
 import com.ntech.theyardhub.feature.product.ProductScreen
 import com.ntech.theyardhub.feature.register.RegisterScreen
+import com.ntech.theyardhub.feature.registeryard.RegisterYardScreen
 import com.ntech.theyardhub.feature.splash.SplashScreen
 import com.ntech.theyardhub.feature.yards.YardScreen
 import org.koin.androidx.compose.get
@@ -128,6 +130,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(CHAT_LIST_SCREEN) {
                             ChatListScreen(navController)
+                        }
+                        composable(REGISTER_YARD_SCREEN) {
+                            RegisterYardScreen(navController)
                         }
                     }
                     Box(

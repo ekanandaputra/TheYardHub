@@ -6,4 +6,5 @@ data class YardModel(
     val description: String = "",
     val locationModel: LocationModel = LocationModel(),
     val documentId: String = "",
+    var userDocumentId: String = ""
 )

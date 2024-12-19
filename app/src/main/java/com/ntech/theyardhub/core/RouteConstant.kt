@@ -15,6 +15,7 @@ object RouteName {
     val REGISTER_SCREEN = "register-screen"
     val YARD_SCREEN = "yard-screen"
     val DETAIL_YARD_SCREEN = "detail-yard-screen"
+    val REGISTER_YARD_SCREEN = "register-yard-screen"
     val DETAIL_USER_SCREEN = "detail-user-screen"
     val CREATE_PRODUCT_SCREEN = "create-product"
 }

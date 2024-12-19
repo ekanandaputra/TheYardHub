@@ -12,4 +12,10 @@ interface YardRepository {
 
     suspend fun getFarm(documentId: String): AppResponse<YardModel>
 
+    suspend fun getFarmByUserId(): AppResponse<YardModel>
+
+    suspend fun createFarm(request: YardModel): AppResponse<YardModel>
+
+    suspend fun updateFarm(documentId: String, request: YardModel): AppResponse<YardModel>
+
 }

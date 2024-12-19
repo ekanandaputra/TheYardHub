@@ -17,8 +17,9 @@ object YardModule {
 
     fun provideYardRepository(
         yardRef: CollectionReference,
+        userRef: CollectionReference,
         dataStorage: DataStorage,
     ): YardRepository {
-        return YardRepositoryImp(yardRef, dataStorage)
+        return YardRepositoryImp(yardRef, userRef, dataStorage)
     }
 }

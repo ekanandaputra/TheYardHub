@@ -24,6 +24,7 @@ import com.ntech.theyardhub.feature.register.RegisterViewModel
 import com.ntech.theyardhub.feature.main.MainActivityViewModel
 import com.ntech.theyardhub.feature.post.PostViewModel
 import com.ntech.theyardhub.feature.product.ProductViewModel
+import com.ntech.theyardhub.feature.registeryard.RegisterYardViewModel
 import com.ntech.theyardhub.feature.yards.YardViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
@@ -60,7 +61,7 @@ val appModule = module {
 
     // Yard Collection
     single(named("YARD")) { YardModule.provideYardRef() }
-    single { YardModule.provideYardRepository(get(named("YARD")), get()) }
+    single { YardModule.provideYardRepository(get(named("YARD")), get(named("USER")), get()) }
 
     single { StorageModule.provideStorageRepository() }
 
@@ -76,7 +77,7 @@ val appModule = module {
         )
     }
     single { UserRepositoryImp(get(), get()) }
-    single { YardRepositoryImp(get(), get()) }
+    single { YardRepositoryImp(get(named("YARD")), get(named("USER")), get()) }
     single { StorageRepositoryImpl() }
 
     // View Model
@@ -92,4 +93,5 @@ val appModule = module {
     factory { HomeViewModel(get(), get()) }
     factory { YardViewModel(get()) }
     factory { CreateProductViewModel(get(), get()) }
+    factory { RegisterYardViewModel(get(), get(), get()) }
 }
