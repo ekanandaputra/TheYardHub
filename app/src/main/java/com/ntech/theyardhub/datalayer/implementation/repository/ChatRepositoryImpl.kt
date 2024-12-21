@@ -5,6 +5,7 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.CollectionReference
 import com.ntech.theyardhub.core.utils.AppResponse
 import com.ntech.theyardhub.core.utils.DataStorage
+import com.ntech.theyardhub.datalayer.model.ChatListModel
 import com.ntech.theyardhub.datalayer.model.ChatMessageModel
 import com.ntech.theyardhub.datalayer.model.ChatRoomModel
 import com.ntech.theyardhub.datalayer.model.ProductModel
@@ -130,6 +131,34 @@ class ChatRepositoryImpl(
                 return@withContext AppResponse.Error(e.toString())
             }
         }
+    }
+
+    override suspend fun getChatRooms(): AppResponse<List<ChatListModel>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val querySnapshot =
+                    chatRef
+                        .whereArrayContains("participants", dataStorage.userDocumentId)
+                        .get()
+                        .await()
+                Log.d("TAG", "getChatRooms: " + querySnapshot.documents)
+                if (querySnapshot.isEmpty) {
+                    return@withContext AppResponse.Empty
+                } else {
+                    val list = querySnapshot.documents.map { document ->
+                        ChatListModel(
+                            message = "lastMessage",
+                            messageAt = Timestamp.now(),
+                            name = "name",
+                        )
+                    }
+                    return@withContext AppResponse.Success(list)
+                }
+            } catch (e: Exception) {
+                return@withContext AppResponse.Error(e.toString())
+            }
+        }
+
     }
 
     private fun timestampToString(timestamp: Timestamp): String {

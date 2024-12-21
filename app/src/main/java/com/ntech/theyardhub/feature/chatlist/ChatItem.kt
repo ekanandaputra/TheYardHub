@@ -19,10 +19,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ntech.theyardhub.core.theme.Black
 import com.ntech.theyardhub.core.theme.Typography
+import com.ntech.theyardhub.datalayer.model.ChatListModel
 import com.ntech.theyardhub.datalayer.model.ChatMessageModel
 
 @Composable
-fun ChatItem(item: ChatMessageModel, onClickItem: (ChatMessageModel) -> Unit) {
+fun ChatItem(item: ChatListModel, onClickItem: (ChatListModel) -> Unit) {
     Column(
         Modifier
             .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
@@ -33,7 +34,7 @@ fun ChatItem(item: ChatMessageModel, onClickItem: (ChatMessageModel) -> Unit) {
     ) {
         Row(verticalAlignment = Alignment.Top, modifier = Modifier.padding(bottom = 8.dp)) {
             Text(
-                text = item.sender,
+                text = item.name,
                 style = Typography.titleMedium.copy(
                     color = Black,
                     fontWeight = FontWeight.Bold
@@ -41,7 +42,7 @@ fun ChatItem(item: ChatMessageModel, onClickItem: (ChatMessageModel) -> Unit) {
                 modifier = Modifier.weight(1f)
             )
             Text(
-                text = item.dateTime,
+                text = item.messageAt.toString(),
                 modifier = Modifier.padding(top = 5.dp),
                 style = Typography.bodySmall.copy(color = Color.Gray),
                 maxLines = 1,
@@ -49,7 +50,7 @@ fun ChatItem(item: ChatMessageModel, onClickItem: (ChatMessageModel) -> Unit) {
             )
         }
         Text(
-            text = item.content,
+            text = item.message,
             modifier = Modifier.padding(top = 5.dp),
             style = Typography.bodyMedium,
             maxLines = 2,
@@ -68,9 +69,9 @@ fun ChatItem(item: ChatMessageModel, onClickItem: (ChatMessageModel) -> Unit) {
 @Composable
 fun ChatItemPreview() {
     ChatItem(
-        item = ChatMessageModel(
-            sender = "Ekananda",
-            content = "Selamat Pagi, "
+        item = ChatListModel(
+            name = "Ekananda",
+            message = "Selamat Pagi, "
         ),
         onClickItem = {}
     )

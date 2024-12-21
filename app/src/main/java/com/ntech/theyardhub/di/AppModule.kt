@@ -15,6 +15,7 @@ import com.ntech.theyardhub.datalayer.implementation.repository.UserRepositoryIm
 import com.ntech.theyardhub.datalayer.implementation.repository.YardRepositoryImp
 import com.ntech.theyardhub.feature.login.LoginViewModel
 import com.ntech.theyardhub.feature.chat.ChatViewModel
+import com.ntech.theyardhub.feature.chatlist.ChatListviewModel
 import com.ntech.theyardhub.feature.createproduct.CreateProductViewModel
 import com.ntech.theyardhub.feature.detailpost.DetailPostViewModel
 import com.ntech.theyardhub.feature.detailuser.DetailUserViewModel
@@ -94,4 +95,5 @@ val appModule = module {
     factory { YardViewModel(get()) }
     factory { CreateProductViewModel(get(), get()) }
     factory { RegisterYardViewModel(get(), get(), get()) }
+    factory { ChatListviewModel(get(), get()) }
 }

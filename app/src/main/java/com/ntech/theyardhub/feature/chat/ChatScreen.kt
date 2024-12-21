@@ -28,7 +28,6 @@ import androidx.navigation.NavController
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
 import com.ntech.theyardhub.datalayer.model.ChatMessageModel
-import com.ntech.theyardhub.feature.chatlist.generateFakeChatMessages
 import org.koin.androidx.compose.get
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

@@ -17,6 +17,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
@@ -29,7 +31,12 @@ import com.ntech.theyardhub.R
 import com.ntech.theyardhub.core.RouteName
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
+import com.ntech.theyardhub.core.utils.AppResponse
+import com.ntech.theyardhub.datalayer.model.ChatListModel
 import com.ntech.theyardhub.datalayer.model.ChatMessageModel
+import com.ntech.theyardhub.datalayer.model.YardModel
+import com.ntech.theyardhub.feature.yards.YardViewModel
+import org.koin.androidx.compose.get
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,6 +44,30 @@ import com.ntech.theyardhub.datalayer.model.ChatMessageModel
 fun ChatListScreen(navController: NavController) {
 
     val applicationContext = LocalContext.current
+    val viewModel: ChatListviewModel = get()
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchChatRooms()
+    }
+
+    val chatRoomStates = viewModel.getChatRoomLiveData.observeAsState().value
+
+    var chatRooms = listOf<ChatListModel>()
+
+    when (chatRoomStates) {
+        is AppResponse.Loading -> {
+        }
+
+        is AppResponse.Empty -> {
+        }
+
+        is AppResponse.Success -> {
+            chatRooms = chatRoomStates.data
+        }
+
+        else -> {
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -63,7 +94,6 @@ fun ChatListScreen(navController: NavController) {
         },
         containerColor = White,
     ) { innerPadding ->
-        val itemList: List<ChatMessageModel> = generateFakeChatMessages()
 
         Column(
             modifier = Modifier
@@ -79,9 +109,9 @@ fun ChatListScreen(navController: NavController) {
                     bottom = 80.dp, top = innerPadding.calculateTopPadding() + 24.dp,
                 )
             ) {
-                items(itemList.size) { item ->
+                items(chatRooms.size) { item ->
                     ChatItem(
-                        item = itemList[item],
+                        item = chatRooms[item],
                         onClickItem = {
                             navController.navigate(RouteName.CHAT_SCREEN)
                         }
@@ -91,39 +121,4 @@ fun ChatListScreen(navController: NavController) {
             }
         }
     }
-}
-
-fun generateFakeChatMessages(): List<ChatMessageModel> {
-    return listOf(
-        ChatMessageModel(
-            sender = "Kebun Anggur Batu",
-            content = "Apakah ada yang bisa saya bantu?",
-            dateTime = "2024-11-23T20:15:00",
-            isMyMessage = false
-        ),
-        ChatMessageModel(
-            sender = "Consumer1",
-            content = "Hi! I want to know more about your organic products.",
-            dateTime = "2024-11-23T10:16:00",
-            isMyMessage = true
-        ),
-        ChatMessageModel(
-            sender = "Farmer2",
-            content = "Sure! We have fresh organic vegetables, fruits, and dairy products.",
-            dateTime = "2024-11-23T10:17:00",
-            isMyMessage = false
-        ),
-        ChatMessageModel(
-            sender = "Consumer2",
-            content = "Sounds great! Do you deliver to the city?",
-            dateTime = "2024-11-23T10:18:00",
-            isMyMessage = true
-        ),
-        ChatMessageModel(
-            sender = "Farmer3",
-            content = "Yes, we deliver to the city every weekend. Let me know what you'd like!",
-            dateTime = "2024-11-23T10:19:00",
-            isMyMessage = false
-        )
-    )
 }
