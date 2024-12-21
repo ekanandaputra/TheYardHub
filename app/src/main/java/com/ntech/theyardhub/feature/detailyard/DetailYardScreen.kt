@@ -138,7 +138,7 @@ fun DetailYardScreen(navController: NavController, yardId: String) {
                     GeneralButton(
                         onButtonClicked = {
                             CoroutineScope(Dispatchers.Main).launch {
-                                viewModel.getOrCreateChatRoom(data.userDocumentId)
+                                viewModel.getOrCreateChatRoom(data.userDocumentId, data.ownerName)
                             }
                         },
                         label = "Chat with Owner",

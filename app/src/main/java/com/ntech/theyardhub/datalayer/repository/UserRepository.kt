@@ -10,7 +10,7 @@ interface UserRepository {
 
     suspend fun setUserDocumentId(userDocumentId: String)
 
-    suspend fun getUserDetail(): AppResponse<UserModel>?
+    suspend fun getUserDetail(userDocumentId: String? = null): AppResponse<UserModel>
 
     suspend fun updateYard(request: YardModel): AppResponse<YardModel>
 

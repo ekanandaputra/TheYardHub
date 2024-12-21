@@ -64,6 +64,7 @@ class YardRepositoryImp(
                     val description: String = querySnapshot?.getString("description") ?: ""
                     val userDocumentId: String = querySnapshot?.getString("userDocumentId") ?: ""
                     val locationData = querySnapshot?.get("locationModel") as? Map<*, *>
+                    val ownerName: String = querySnapshot?.getString("ownerName") ?: ""
 
 // Map the locationModel if it exists
                     val locationModel = if (locationData != null) {
@@ -83,7 +84,8 @@ class YardRepositoryImp(
                             description = description,
                             locationModel = locationModel,
                             documentId = documentId,
-                            userDocumentId = userDocumentId
+                            userDocumentId = userDocumentId,
+                            ownerName = ownerName,
                         )
                     )
                 }
@@ -143,6 +145,7 @@ class YardRepositoryImp(
         return withContext(Dispatchers.IO) {
             try {
                 request.userDocumentId = dataStorage.userDocumentId
+                request.ownerName = dataStorage.userName
                 suspendCoroutine<AppResponse<YardModel>> { continuation ->
                     yardRef.add(request)
                         .addOnSuccessListener {
@@ -164,8 +167,8 @@ class YardRepositoryImp(
     ): AppResponse<YardModel> {
         return withContext(Dispatchers.IO) {
             try {
-                Log.d("TAG", "updateFarm: " + documentId)
                 request.userDocumentId = dataStorage.userDocumentId
+                request.ownerName = dataStorage.userName
                 suspendCoroutine<AppResponse<YardModel>> { continuation ->
                     yardRef.document(documentId)
                         .set(request, SetOptions.merge())
@@ -181,5 +184,4 @@ class YardRepositoryImp(
             }
         }
     }
-
 }

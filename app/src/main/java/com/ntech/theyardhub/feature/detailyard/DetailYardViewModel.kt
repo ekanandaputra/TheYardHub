@@ -1,5 +1,6 @@
 package com.ntech.theyardhub.feature.detailyard
 
+import android.provider.Telephony.Mms.Part
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,6 +10,7 @@ import com.google.firebase.Timestamp
 import com.ntech.theyardhub.core.utils.AppResponse
 import com.ntech.theyardhub.core.utils.DataStorage
 import com.ntech.theyardhub.datalayer.model.ChatRoomModel
+import com.ntech.theyardhub.datalayer.model.ParticipantDetailModel
 import com.ntech.theyardhub.datalayer.model.ProductModel
 import com.ntech.theyardhub.datalayer.model.YardModel
 import com.ntech.theyardhub.datalayer.repository.ChatRepository
@@ -59,7 +61,7 @@ class DetailYardViewModel(
         }
     }
 
-    suspend fun createChatRoom(destinationUserDocumentId: String) {
+    suspend fun createChatRoom(destinationUserDocumentId: String, destinationOwnerName: String) {
         val request: ChatRoomModel = ChatRoomModel(
             participants = listOf(destinationUserDocumentId, dataStorage.userDocumentId).sorted(),
             createdAt = Timestamp.now()
@@ -86,7 +88,10 @@ class DetailYardViewModel(
         }
     }
 
-    suspend fun getOrCreateChatRoom(destinationUserDocumentId: String) {
+    suspend fun getOrCreateChatRoom(
+        destinationUserDocumentId: String,
+        destinationOwnerName: String
+    ) {
         val participants = listOf(destinationUserDocumentId, dataStorage.userDocumentId).sorted()
 
         viewModelScope.launch {
@@ -104,9 +109,24 @@ class DetailYardViewModel(
                 // Chat room does not exist, create a new one
                 Log.d("TAG", "No chat room found. Creating a new one.")
 
+                val participantDetailList = mutableListOf<ParticipantDetailModel>()
+                participantDetailList.add(
+                    ParticipantDetailModel(
+                        name = dataStorage.userName,
+                        userDocumentId = dataStorage.userDocumentId
+                    )
+                )
+                participantDetailList.add(
+                    ParticipantDetailModel(
+                        name = destinationOwnerName,
+                        userDocumentId = destinationUserDocumentId
+                    )
+                )
+
                 val newChatRoom = ChatRoomModel(
                     participants = participants,
-                    createdAt = Timestamp.now()
+                    createdAt = Timestamp.now(),
+                    participantDetails = participantDetailList,
                 )
 
                 _createChatRoomViewModel.postValue(AppResponse.Loading)

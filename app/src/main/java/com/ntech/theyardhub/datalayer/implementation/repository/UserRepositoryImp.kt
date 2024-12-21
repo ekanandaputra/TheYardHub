@@ -22,10 +22,11 @@ class UserRepositoryImp(
         dataStorage.userDocumentId = userDocumentId
     }
 
-    override suspend fun getUserDetail(): AppResponse<UserModel>? {
+    override suspend fun getUserDetail(userDocumentId: String?): AppResponse<UserModel> {
+        val id = userDocumentId ?: dataStorage.userDocumentId
         return withContext(Dispatchers.IO) {
             try {
-                val querySnapshot = userRef.document(dataStorage.userDocumentId).get().await()
+                val querySnapshot = userRef.document(id).get().await()
                 if (!querySnapshot.exists()) {
                     return@withContext AppResponse.Empty
                 } else {
