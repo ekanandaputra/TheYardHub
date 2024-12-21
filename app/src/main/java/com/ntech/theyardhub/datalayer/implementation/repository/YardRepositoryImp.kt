@@ -59,16 +59,31 @@ class YardRepositoryImp(
                 if (!querySnapshot.exists()) {
                     return@withContext AppResponse.Empty
                 } else {
-                    val name: String = querySnapshot.getString("name") ?: ""
-                    val desc: String = querySnapshot.getString("description") ?: ""
-                    val city: String = querySnapshot.getString("city") ?: ""
+                    val name: String = querySnapshot?.getString("name") ?: ""
+                    val thumbnail: String = querySnapshot?.getString("thumbnail") ?: ""
+                    val description: String = querySnapshot?.getString("description") ?: ""
+                    val userDocumentId: String = querySnapshot?.getString("userDocumentId") ?: ""
+                    val locationData = querySnapshot?.get("locationModel") as? Map<*, *>
 
+// Map the locationModel if it exists
+                    val locationModel = if (locationData != null) {
+                        LocationModel(
+                            latitude = locationData["latitude"] as? Double ?: 0.0,
+                            longitude = locationData["longitude"] as? Double ?: 0.0
+                        )
+                    } else {
+                        LocationModel()
+                    }
+
+                    // Return the fully constructed YardModel
                     return@withContext AppResponse.Success(
                         YardModel(
                             name = name,
-                            description = desc,
-                            locationModel = LocationModel(city = city),
+                            thumbnail = thumbnail,
+                            description = description,
+                            locationModel = locationModel,
                             documentId = documentId,
+                            userDocumentId = userDocumentId
                         )
                     )
                 }

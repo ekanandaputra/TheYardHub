@@ -122,11 +122,12 @@ class ProductRepositoryImpl(
         }
     }
 
-    override suspend fun getProductsByUserId(): AppResponse<List<ProductModel>> {
+    override suspend fun getProductsByUserId(userDocumentId: String?): AppResponse<List<ProductModel>> {
+        val id = userDocumentId ?: dataStorage.userDocumentId
         return withContext(Dispatchers.IO) {
             try {
                 val querySnapshot =
-                    productRef.whereEqualTo("userDocumentId", dataStorage.userDocumentId).get()
+                    productRef.whereEqualTo("userDocumentId", id).get()
                         .await()
                 if (querySnapshot.isEmpty) {
                     return@withContext AppResponse.Empty

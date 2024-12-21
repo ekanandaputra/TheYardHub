@@ -48,6 +48,9 @@ import com.ntech.theyardhub.datalayer.model.UserModel
 import com.ntech.theyardhub.datalayer.model.YardModel
 import com.ntech.theyardhub.feature.detailpost.DetailPostViewModel
 import com.ntech.theyardhub.feature.product.ProductItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -125,6 +128,9 @@ fun DetailYardScreen(navController: NavController, yardId: String) {
                 ) {
                     GeneralButton(
                         onButtonClicked = {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                viewModel.getOrCreateChatRoom(data.userDocumentId)
+                            }
                         },
                         label = "Chat with Owner",
                         buttonType = ButtonType.PRIMARY,
@@ -144,7 +150,7 @@ fun DetailYardScreen(navController: NavController, yardId: String) {
                 ),
         ) {
             LoadImageWithGlide(
-                imageUrl = "https://images-squarespace--cdn-com.translate.goog/content/v1/552ed2d1e4b0745abca6723d/3e60e68a-5ee9-4f49-9261-e890a6673173/grape+3.jpg?format=2500w&_x_tr_sl=en&_x_tr_tl=id&_x_tr_hl=id&_x_tr_pto=tc",
+                imageUrl = data.thumbnail,
                 contentDescription = "",
                 modifier = Modifier
                     .fillMaxWidth()
@@ -157,79 +163,7 @@ fun DetailYardScreen(navController: NavController, yardId: String) {
                 style = Typography.bodyMedium
             )
             Spacer(modifier = Modifier.height(32.dp))
-            DetailYardProduct(navController)
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .padding(16.dp),
-                contentAlignment = Alignment.BottomCenter
-            ) {
-                GeneralButton(
-                    onButtonClicked = { /*TODO*/ },
-                    label = "Contact",
-                    buttonType = ButtonType.PRIMARY,
-                    buttonHeight = ButtonHeight.MEDIUM,
-                )
-            }
-        }
-    }
-}
-
-@Composable()
-fun DetailYardProduct(navController: NavController) {
-    val user = UserModel(
-        id = "user-12345",
-        name = "John Doe",
-    )
-
-    val products = listOf(ProductModel())
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(
-                start = 16.dp,
-                end = 16.dp
-            ),
-    ) {
-        Text(
-            text = "Product",
-            style = Typography.titleLarge
-        )
-        SimpleGridView(
-            modifier = Modifier.fillMaxWidth(),
-            columns = 2,
-            countOfItems = products.size,
-        ) { index ->
-            ProductItem(product = products[index], onClickItem = {
-                navController.navigate(
-                    DETAIL_PRODUCT_SCREEN
-                )
-            })
-        }
-    }
-}
-
-@Composable
-fun SimpleGridView(
-    modifier: Modifier = Modifier,
-    columns: Int,
-    countOfItems: Int,
-    content: @Composable() (index: Int) -> Unit
-) {
-    val columnAndRowItems = (0..countOfItems).chunked(columns)
-
-    Column(modifier = modifier) {
-        columnAndRowItems.forEach { rowItems ->
-            Row(modifier = Modifier.fillMaxWidth()) {
-                rowItems.forEach { index ->
-                    Box(modifier = Modifier.weight(1f)) {
-                        content(index)
-                    }
-                }
-            }
+//            DetailYardProduct(navController)
         }
     }
 }

@@ -17,6 +17,6 @@ interface ProductRepository {
 
     suspend fun createProduct(request: ProductModel): AppResponse<ProductModel>
 
-    suspend fun getProductsByUserId(): AppResponse<List<ProductModel>>
+    suspend fun getProductsByUserId(userDocumentId: String?): AppResponse<List<ProductModel>>
 
 }
