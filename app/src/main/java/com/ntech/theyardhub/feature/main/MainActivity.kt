@@ -79,8 +79,16 @@ class MainActivity : ComponentActivity() {
                         composable(HOME_SCREEN) {
                             HomeScreen(navController)
                         }
-                        composable(CHAT_SCREEN) {
-                            ChatScreen(navController)
+                        composable(
+                            route = "$CHAT_SCREEN/{roomId}",
+                            arguments = listOf(navArgument("roomId") {
+                                NavType.StringType.also {
+                                    type = it
+                                }
+                            })
+                        ) { backStackEntry ->
+                            val roomId = backStackEntry.arguments?.getString("roomId")
+                            ChatScreen(navController, roomId ?: "")
                         }
                         composable(POST_SCREEN) {
                             PostScreen(navController)

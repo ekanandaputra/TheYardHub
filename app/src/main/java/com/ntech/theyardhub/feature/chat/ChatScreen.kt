@@ -34,7 +34,7 @@ import org.koin.androidx.compose.get
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen(navController: NavController) {
+fun ChatScreen(navController: NavController, roomId: String) {
 
     val coroutineScope = rememberCoroutineScope()
     val viewModel: ChatViewModel = get()
@@ -89,7 +89,7 @@ fun ChatScreen(navController: NavController) {
                             contentDescription = "Chevron Left"
                         )
                         Text(
-                            "Kebun Anggur Batu",
+                            roomId,
                             modifier = Modifier.padding(start = 8.dp),
                             style = Typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold)
                         )

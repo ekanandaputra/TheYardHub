@@ -1,6 +1,7 @@
 package com.ntech.theyardhub.feature.detailyard
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
@@ -33,8 +34,10 @@ import androidx.navigation.NavController
 import com.ntech.theyardhub.R
 import com.ntech.theyardhub.core.ButtonHeight
 import com.ntech.theyardhub.core.ButtonType
+import com.ntech.theyardhub.core.RouteName.CHAT_SCREEN
 import com.ntech.theyardhub.core.RouteName.DETAIL_POST_SCREEN
 import com.ntech.theyardhub.core.RouteName.DETAIL_PRODUCT_SCREEN
+import com.ntech.theyardhub.core.RouteName.DETAIL_YARD_SCREEN
 import com.ntech.theyardhub.core.component.GeneralButton
 import com.ntech.theyardhub.core.component.LoadingDialog
 import com.ntech.theyardhub.core.theme.Typography
@@ -67,6 +70,7 @@ fun DetailYardScreen(navController: NavController, yardId: String) {
     }
 
     val yardState = viewModel.yardLiveData.observeAsState().value
+    val chatRoomId = viewModel.chatRoomId.observeAsState().value
 
     val showDialog = remember { mutableStateOf(false) }
 
@@ -89,6 +93,11 @@ fun DetailYardScreen(navController: NavController, yardId: String) {
         else -> {
             showDialog.value = false
         }
+    }
+
+    if (chatRoomId != null) {
+        Log.d("TAG", "DetailYardScreen: " + chatRoomId.toString())
+        navController.navigate("$CHAT_SCREEN/${chatRoomId.toString()}")
     }
 
     if (showDialog.value) LoadingDialog(setShowDialog = {})

@@ -91,6 +91,7 @@ class ChatRepositoryImpl(
                 suspendCoroutine<AppResponse<ChatRoomModel>> { continuation ->
                     chatRef.add(request)
                         .addOnSuccessListener {
+                            request.documentId = it.id
                             continuation.resume(AppResponse.Success(request))
                         }
                         .addOnFailureListener { e ->
