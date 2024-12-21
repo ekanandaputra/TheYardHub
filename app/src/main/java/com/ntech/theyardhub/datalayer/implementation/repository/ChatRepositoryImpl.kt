@@ -8,15 +8,18 @@ import com.ntech.theyardhub.core.utils.DataStorage
 import com.ntech.theyardhub.datalayer.model.ChatListModel
 import com.ntech.theyardhub.datalayer.model.ChatMessageModel
 import com.ntech.theyardhub.datalayer.model.ChatRoomModel
+import com.ntech.theyardhub.datalayer.model.ParticipantDetailModel
 import com.ntech.theyardhub.datalayer.model.ProductModel
 import com.ntech.theyardhub.datalayer.repository.ChatRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.sql.Time
 import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
+import kotlin.math.log
 
 class ChatRepositoryImpl(
     private val chatRef: CollectionReference,
@@ -146,10 +149,27 @@ class ChatRepositoryImpl(
                     return@withContext AppResponse.Empty
                 } else {
                     val list = querySnapshot.documents.map { document ->
+                        val lastMessage: String = document.getString("lastMessage") ?: ""
+                        val messageAt: Timestamp =
+                            document.getTimestamp("lastMessageAt") ?: Timestamp(0, 0)
+                        val rawParticipantDetails =
+                            document.get("participantDetails") as? List<Map<String, String>>
+
+                        val participantDetails = rawParticipantDetails?.map { entry ->
+                            ParticipantDetailModel(
+                                userDocumentId = entry["userDocumentId"].toString(),
+                                name = entry["name"].toString()
+                            )
+                        }
+                        Log.d("TAG", "getChatRooms: " + participantDetails)
+
+                        val name =
+                            participantDetails?.firstOrNull { it.userDocumentId != dataStorage.userDocumentId }?.name
                         ChatListModel(
-                            message = "lastMessage",
-                            messageAt = Timestamp.now(),
-                            name = "name",
+                            documentId = document.id,
+                            message = lastMessage,
+                            messageAt = messageAt,
+                            name = name ?: "",
                         )
                     }
                     return@withContext AppResponse.Success(list)

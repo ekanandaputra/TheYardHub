@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ntech.theyardhub.R
 import com.ntech.theyardhub.core.RouteName
+import com.ntech.theyardhub.core.RouteName.CHAT_SCREEN
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
 import com.ntech.theyardhub.core.utils.AppResponse
@@ -113,7 +114,7 @@ fun ChatListScreen(navController: NavController) {
                     ChatItem(
                         item = chatRooms[item],
                         onClickItem = {
-                            navController.navigate(RouteName.CHAT_SCREEN)
+                            navController.navigate("$CHAT_SCREEN/${it.documentId}")
                         }
                     )
                     Spacer(modifier = Modifier.height(16.dp))

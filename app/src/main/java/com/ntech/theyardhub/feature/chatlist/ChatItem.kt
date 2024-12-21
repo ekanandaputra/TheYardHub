@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ntech.theyardhub.core.theme.Black
 import com.ntech.theyardhub.core.theme.Typography
+import com.ntech.theyardhub.core.utils.formatFirebaseTimestampToDate
 import com.ntech.theyardhub.datalayer.model.ChatListModel
 import com.ntech.theyardhub.datalayer.model.ChatMessageModel
 
@@ -42,7 +43,7 @@ fun ChatItem(item: ChatListModel, onClickItem: (ChatListModel) -> Unit) {
                 modifier = Modifier.weight(1f)
             )
             Text(
-                text = item.messageAt.toString(),
+                text = formatFirebaseTimestampToDate(item.messageAt),
                 modifier = Modifier.padding(top = 5.dp),
                 style = Typography.bodySmall.copy(color = Color.Gray),
                 maxLines = 1,
@@ -70,6 +71,7 @@ fun ChatItem(item: ChatListModel, onClickItem: (ChatListModel) -> Unit) {
 fun ChatItemPreview() {
     ChatItem(
         item = ChatListModel(
+            documentId = "",
             name = "Ekananda",
             message = "Selamat Pagi, "
         ),
