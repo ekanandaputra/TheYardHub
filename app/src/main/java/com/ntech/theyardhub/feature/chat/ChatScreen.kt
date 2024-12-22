@@ -1,7 +1,6 @@
 package com.ntech.theyardhub.feature.chat
 
 import android.annotation.SuppressLint
-import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,9 +25,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.google.firebase.Timestamp
 import com.ntech.theyardhub.core.component.LoadingDialog
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
@@ -39,7 +39,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(navController: NavController, roomId: String) {
@@ -48,31 +48,25 @@ fun ChatScreen(navController: NavController, roomId: String) {
     val viewModel: ChatViewModel = get()
     val mContext = LocalContext.current
     val itemsList = remember { mutableStateListOf<ChatMessageModel>() }
+    val showDialog = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.fetchHistory(chatRoomId = roomId)
     }
 
     val messageState = viewModel.messageLiveData.observeAsState().value
+    val sendMessageState = viewModel.sendMessageLiveData.observeAsState().value
 
-    val showDialog = remember { mutableStateOf(false) }
+    showDialog.value = messageState is AppResponse.Loading
+    showDialog.value = sendMessageState is AppResponse.Loading
 
-    when (messageState) {
-        is AppResponse.Loading -> {
-            showDialog.value = true
-        }
+    if (messageState is AppResponse.Success) {
+        itemsList.addAll(messageState.data.filterNot { it in itemsList })
+    }
 
-        is AppResponse.Empty -> {
-            showDialog.value = false
-        }
-
-        is AppResponse.Success -> {
-            showDialog.value = false
-            itemsList.addAll(messageState.data)
-        }
-
-        else -> {
-            showDialog.value = false
+    if (sendMessageState is AppResponse.Success) {
+        viewModel.viewModelScope.launch {
+            viewModel.fetchHistory(chatRoomId = roomId)
         }
     }
 
@@ -94,7 +88,7 @@ fun ChatScreen(navController: NavController, roomId: String) {
                         )
                     }
                 },
-                colors = TopAppBarDefaults.smallTopAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = White
                 )
             )
@@ -102,7 +96,7 @@ fun ChatScreen(navController: NavController, roomId: String) {
         containerColor = White,
         bottomBar = {
             ChatInput { message ->
-                CoroutineScope(Dispatchers.Main).launch {
+                viewModel.viewModelScope.launch {
                     viewModel.sendMessage(roomId, message)
                 }
             }

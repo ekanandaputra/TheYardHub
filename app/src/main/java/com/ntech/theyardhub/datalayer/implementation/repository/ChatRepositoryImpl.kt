@@ -3,6 +3,7 @@ package com.ntech.theyardhub.datalayer.implementation.repository
 import android.util.Log
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.Query
 import com.ntech.theyardhub.core.utils.AppResponse
 import com.ntech.theyardhub.core.utils.DataStorage
 import com.ntech.theyardhub.datalayer.model.ChatListModel
@@ -25,7 +26,9 @@ class ChatRepositoryImpl(
         return withContext(Dispatchers.IO) {
             try {
                 val querySnapshot =
-                    chatRef.document(chatRoomId).collection("messages").get().await()
+                    chatRef.document(chatRoomId).collection("messages")
+                        .orderBy("dateTime", Query.Direction.ASCENDING)
+                        .get().await()
                 if (querySnapshot.isEmpty) {
                     return@withContext AppResponse.Empty
                 } else {
@@ -65,17 +68,18 @@ class ChatRepositoryImpl(
             dateTime = Timestamp.now(),
             isMyMessage = null,
         )
+
+        val lastMessageRequest = mapOf(
+            "lastMessage" to message,
+            "lastMessageAt" to Timestamp.now()
+        )
+
         return withContext(Dispatchers.IO) {
             try {
-                suspendCoroutine<AppResponse<ChatMessageModel>> { continuation ->
-                    chatRef.document(chatRoomId).collection("messages").add(request)
-                        .addOnSuccessListener {
-                            continuation.resume(AppResponse.Success(request))
-                        }
-                        .addOnFailureListener { e ->
-                            continuation.resume(AppResponse.Error(e.toString()))
-                        }
-                }
+                val messageRef =
+                    chatRef.document(chatRoomId).collection("messages").add(request).await()
+                chatRef.document(chatRoomId).update(lastMessageRequest).await()
+                AppResponse.Success(request)
             } catch (e: Exception) {
                 AppResponse.Error(e.toString())
             }
@@ -106,7 +110,8 @@ class ChatRepositoryImpl(
         return withContext(Dispatchers.IO) {
             try {
                 val querySnapshot =
-                    chatRef.whereEqualTo("participants", participants.sorted()).get()
+                    chatRef.whereEqualTo("participants", participants.sorted())
+                        .get()
                         .await()
                 if (querySnapshot.isEmpty) {
                     return@withContext AppResponse.Empty
@@ -135,6 +140,7 @@ class ChatRepositoryImpl(
                 val querySnapshot =
                     chatRef
                         .whereArrayContains("participants", dataStorage.userDocumentId)
+                        .orderBy("lastMessageAt", Query.Direction.DESCENDING)
                         .get()
                         .await()
                 Log.d("TAG", "getChatRooms: " + querySnapshot.documents)
@@ -168,6 +174,7 @@ class ChatRepositoryImpl(
                     return@withContext AppResponse.Success(list)
                 }
             } catch (e: Exception) {
+                Log.e("TAG", "getChatRooms: " + e.toString())
                 return@withContext AppResponse.Error(e.toString())
             }
         }

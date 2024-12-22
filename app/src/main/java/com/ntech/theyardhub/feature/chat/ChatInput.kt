@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.ntech.theyardhub.R
 import com.ntech.theyardhub.core.ButtonHeight
@@ -28,7 +29,7 @@ import com.ntech.theyardhub.core.theme.Gray
 import org.koin.androidx.compose.get
 
 @Composable
-fun ChatInput(onSendMessage: (String) -> Unit) {
+fun ChatInput(message: TextFieldValue = TextFieldValue(), onSendMessage: (String) -> Unit) {
 
     val coroutineScope = rememberCoroutineScope()
     val viewModel: ChatViewModel = get()
@@ -62,6 +63,7 @@ fun ChatInput(onSendMessage: (String) -> Unit) {
                 .size(32.dp)
                 .clickable {
                     onSendMessage.invoke(messageState.text)
+                    viewModel.setMessage(TextFieldValue())
                 }
         )
     }

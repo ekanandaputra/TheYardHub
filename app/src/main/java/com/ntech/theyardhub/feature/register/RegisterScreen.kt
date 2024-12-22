@@ -86,7 +86,7 @@ fun RegisterScreen(navController: NavController) {
         topBar = {
             TopAppBar(
                 title = { Text("") },
-                colors = TopAppBarDefaults.smallTopAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = White
                 )
             )

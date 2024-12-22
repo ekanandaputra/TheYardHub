@@ -78,7 +78,7 @@ fun CreateProductScreen(navController: NavController) {
         topBar = {
             TopAppBar(
                 title = { Text("Create Product") },
-                colors = TopAppBarDefaults.smallTopAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = White
                 )
             )

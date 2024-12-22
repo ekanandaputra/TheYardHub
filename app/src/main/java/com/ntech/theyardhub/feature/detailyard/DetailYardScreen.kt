@@ -120,7 +120,7 @@ fun DetailYardScreen(navController: NavController, yardId: String) {
                         )
                     }
                 },
-                colors = TopAppBarDefaults.smallTopAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = White
                 )
             )

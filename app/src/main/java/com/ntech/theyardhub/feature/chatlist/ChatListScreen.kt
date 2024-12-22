@@ -88,7 +88,7 @@ fun ChatListScreen(navController: NavController) {
                         )
                     }
                 },
-                colors = TopAppBarDefaults.smallTopAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = White
                 )
             )

@@ -111,7 +111,7 @@ fun RegisterYardScreen(navController: NavController) {
         topBar = {
             TopAppBar(
                 title = { Text("Register Farm") },
-                colors = TopAppBarDefaults.smallTopAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = White
                 )
             )

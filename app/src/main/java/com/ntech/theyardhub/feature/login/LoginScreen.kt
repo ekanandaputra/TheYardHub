@@ -88,7 +88,7 @@ fun LoginScreen(navController: NavController) {
         topBar = {
             TopAppBar(
                 title = { Text("Sign In") },
-                colors = TopAppBarDefaults.smallTopAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = White
                 )
             )
