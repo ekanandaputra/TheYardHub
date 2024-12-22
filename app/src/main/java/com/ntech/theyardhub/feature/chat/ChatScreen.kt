@@ -16,7 +16,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -25,9 +28,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.google.firebase.Timestamp
+import com.ntech.theyardhub.core.component.LoadingDialog
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
+import com.ntech.theyardhub.core.utils.AppResponse
 import com.ntech.theyardhub.datalayer.model.ChatMessageModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -40,43 +49,34 @@ fun ChatScreen(navController: NavController, roomId: String) {
     val mContext = LocalContext.current
     val itemsList = remember { mutableStateListOf<ChatMessageModel>() }
 
-//    LaunchedEffect(Unit) {
-//        viewModel.fetchHistory()
-//    }
-//
-//    val messageState = viewModel.messageLiveData.observeAsState().value
-//
-//    val showDialog = remember { mutableStateOf(false) }
-//
-//    when (messageState) {
-//        is AppResponse.Loading -> {
-//            showDialog.value = true
-//        }
-//
-//        is AppResponse.Empty -> {
-//            showDialog.value = false
-//        }
-//
-//        is AppResponse.Success -> {
-//            showDialog.value = false
-//            itemsList = messageState.data as ArrayList<ChatMessageModel>
-//        }
-//
-//        else -> {
-//            showDialog.value = false
-//        }
-//    }
-//
-//    if (showDialog.value) LoadingDialog(setShowDialog = {})
+    LaunchedEffect(Unit) {
+        viewModel.fetchHistory(chatRoomId = roomId)
+    }
 
-    itemsList.add(
-        ChatMessageModel(
-            sender = "Farmer1",
-            content = "Apakah ada yang bisa saya bantu?",
-            dateTime = "2024-11-23T20:15:00",
-            isMyMessage = false
-        )
-    )
+    val messageState = viewModel.messageLiveData.observeAsState().value
+
+    val showDialog = remember { mutableStateOf(false) }
+
+    when (messageState) {
+        is AppResponse.Loading -> {
+            showDialog.value = true
+        }
+
+        is AppResponse.Empty -> {
+            showDialog.value = false
+        }
+
+        is AppResponse.Success -> {
+            showDialog.value = false
+            itemsList.addAll(messageState.data)
+        }
+
+        else -> {
+            showDialog.value = false
+        }
+    }
+
+    if (showDialog.value) LoadingDialog(setShowDialog = {})
 
     Scaffold(
         topBar = {
@@ -102,8 +102,9 @@ fun ChatScreen(navController: NavController, roomId: String) {
         containerColor = White,
         bottomBar = {
             ChatInput { message ->
-                Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show()
-                itemsList.add(ChatMessageModel(content = message, isMyMessage = true))
+                CoroutineScope(Dispatchers.Main).launch {
+                    viewModel.sendMessage(roomId, message)
+                }
             }
 
         }

@@ -24,11 +24,24 @@ class ChatViewModel(
     private val _messageLiveData = MutableLiveData<AppResponse<List<ChatMessageModel>>>()
     val messageLiveData: LiveData<AppResponse<List<ChatMessageModel>>> get() = _messageLiveData
 
-    suspend fun fetchHistory() {
+    private val _sendMessageLiveData = MutableLiveData<AppResponse<ChatMessageModel>>()
+    val sendMessageLiveData: LiveData<AppResponse<ChatMessageModel>> get() = _sendMessageLiveData
+
+    suspend fun fetchHistory(chatRoomId: String) {
         viewModelScope.launch {
             _messageLiveData.apply {
                 postValue(AppResponse.Loading)
-                val result = chatRepository.getChatMessage()
+                val result = chatRepository.getChatMessage(chatRoomId)
+                postValue(result)
+            }
+        }
+    }
+
+    suspend fun sendMessage(chatRoomId: String, message: String) {
+        viewModelScope.launch {
+            _sendMessageLiveData.apply {
+                postValue(AppResponse.Loading)
+                val result = chatRepository.sendMessage(message, chatRoomId)
                 postValue(result)
             }
         }

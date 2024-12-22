@@ -9,42 +9,41 @@ import com.ntech.theyardhub.datalayer.model.ChatListModel
 import com.ntech.theyardhub.datalayer.model.ChatMessageModel
 import com.ntech.theyardhub.datalayer.model.ChatRoomModel
 import com.ntech.theyardhub.datalayer.model.ParticipantDetailModel
-import com.ntech.theyardhub.datalayer.model.ProductModel
 import com.ntech.theyardhub.datalayer.repository.ChatRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import java.sql.Time
-import java.text.SimpleDateFormat
-import java.util.Locale
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
-import kotlin.math.log
 
 class ChatRepositoryImpl(
     private val chatRef: CollectionReference,
     private val dataStorage: DataStorage
 ) : ChatRepository {
 
-    override suspend fun getChatMessage(): AppResponse<List<ChatMessageModel>> {
+    override suspend fun getChatMessage(chatRoomId: String): AppResponse<List<ChatMessageModel>> {
         return withContext(Dispatchers.IO) {
             try {
-                val querySnapshot = chatRef.get().await()
+                val querySnapshot =
+                    chatRef.document(chatRoomId).collection("messages").get().await()
                 if (querySnapshot.isEmpty) {
                     return@withContext AppResponse.Empty
                 } else {
                     val list = querySnapshot.documents.map { document ->
-                        val dateTime =
-                            (document.get("dateTime") as? Timestamp)?.let { timestampToString(it) }
-                        val sender = document.get("sender") as? String ?: ""
-                        val content = document.get("message") as? String ?: ""
-                        val isMyMessage = sender == "ekananda"
+
+                        val sender: String = document.getString("sender") ?: ""
+                        val senderDocumentId: String = document.getString("senderDocumentId") ?: ""
+                        val content: String = document.getString("content") ?: ""
+                        val dateTime: Timestamp =
+                            document.getTimestamp("dateTime") ?: Timestamp(0, 0)
+                        val isMyMessage = senderDocumentId == dataStorage.userDocumentId
 
                         ChatMessageModel(
                             sender = sender,
+                            senderDocumentId = senderDocumentId,
                             content = content,
-                            dateTime = dateTime ?: "",
-                            isMyMessage = true,
+                            dateTime = dateTime,
+                            isMyMessage = isMyMessage,
                         )
                     }
                     return@withContext AppResponse.Success(list)
@@ -55,38 +54,32 @@ class ChatRepositoryImpl(
         }
     }
 
-    override suspend fun sendMessage(message: String): AppResponse<ChatMessageModel> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun getLatestChats(): AppResponse<List<ChatMessageModel>> {
+    override suspend fun sendMessage(
+        message: String,
+        chatRoomId: String
+    ): AppResponse<ChatMessageModel> {
+        val request: ChatMessageModel = ChatMessageModel(
+            sender = dataStorage.userName,
+            senderDocumentId = dataStorage.userDocumentId,
+            content = message,
+            dateTime = Timestamp.now(),
+            isMyMessage = null,
+        )
         return withContext(Dispatchers.IO) {
             try {
-                val querySnapshot = chatRef.get().await()
-                if (querySnapshot.isEmpty) {
-                    return@withContext AppResponse.Empty
-                } else {
-                    val list = querySnapshot.documents.map { document ->
-                        val dateTime =
-                            (document.get("dateTime") as? Timestamp)?.let { timestampToString(it) }
-                        val sender = document.get("sender") as? String ?: ""
-                        val content = document.get("message") as? String ?: ""
-                        val isMyMessage = sender == "ekananda"
-
-                        ChatMessageModel(
-                            sender = sender,
-                            content = content,
-                            dateTime = dateTime ?: "",
-                            isMyMessage = true,
-                        )
-                    }
-                    return@withContext AppResponse.Success(list)
+                suspendCoroutine<AppResponse<ChatMessageModel>> { continuation ->
+                    chatRef.document(chatRoomId).collection("messages").add(request)
+                        .addOnSuccessListener {
+                            continuation.resume(AppResponse.Success(request))
+                        }
+                        .addOnFailureListener { e ->
+                            continuation.resume(AppResponse.Error(e.toString()))
+                        }
                 }
             } catch (e: Exception) {
-                return@withContext AppResponse.Error(e.toString())
+                AppResponse.Error(e.toString())
             }
         }
-
     }
 
     override suspend fun createChatRoom(request: ChatRoomModel): AppResponse<ChatRoomModel> {
@@ -179,12 +172,6 @@ class ChatRepositoryImpl(
             }
         }
 
-    }
-
-    private fun timestampToString(timestamp: Timestamp): String {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        val date = timestamp.toDate()
-        return dateFormat.format(date)
     }
 
 }

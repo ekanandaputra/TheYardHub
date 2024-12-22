@@ -20,12 +20,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.Timestamp
 import com.ntech.theyardhub.core.theme.Black
 import com.ntech.theyardhub.core.theme.Gray
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
 import com.ntech.theyardhub.core.theme.bluePrimary
 import com.ntech.theyardhub.core.theme.textGray
+import com.ntech.theyardhub.core.utils.formatFirebaseTimestampToDate
 import com.ntech.theyardhub.datalayer.model.ChatMessageModel
 
 @Composable
@@ -34,7 +36,7 @@ fun ChatMessageItem(message: ChatMessageModel) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 12.dp),
-        horizontalAlignment = if (message.isMyMessage) Alignment.End else Alignment.Start
+        horizontalAlignment = if (message.isMyMessage == true) Alignment.End else Alignment.Start
     ) {
         Card(
             shape = RoundedCornerShape(16.dp),
@@ -43,7 +45,7 @@ fun ChatMessageItem(message: ChatMessageModel) {
         ) {
             Column(
                 modifier = Modifier
-                    .background(color = if (message.isMyMessage) bluePrimary else Color.LightGray)
+                    .background(color = if (message.isMyMessage == true) bluePrimary else Color.LightGray)
                     .fillMaxWidth(0.7f)
             ) {
                 Text(
@@ -53,14 +55,14 @@ fun ChatMessageItem(message: ChatMessageModel) {
                         .align(Alignment.Start)
                         .padding(vertical = 8.dp, horizontal = 16.dp),
                     style = Typography.bodyMedium.copy(
-                        color = if (message.isMyMessage) White else Black,
+                        color = if (message.isMyMessage == true) White else Black,
                     )
                 )
             }
         }
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = message.dateTime,
+            text = formatFirebaseTimestampToDate(message.dateTime),
             style = Typography.bodySmall.copy(color = textGray)
         )
     }
@@ -74,7 +76,7 @@ fun ChatMessageItemPreview() {
         ChatMessageModel(
             "Ekananda",
             "Percobaan test message",
-            dateTime = "",
+            dateTime = Timestamp.now(),
             isMyMessage = true
         )
     )

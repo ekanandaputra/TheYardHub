@@ -8,11 +8,9 @@ import com.ntech.theyardhub.datalayer.model.ChatRoomModel
 
 interface ChatRepository {
 
-    suspend fun getChatMessage(): AppResponse<List<ChatMessageModel>>
+    suspend fun getChatMessage(chatRoomId: String): AppResponse<List<ChatMessageModel>>
 
-    suspend fun sendMessage(message: String): AppResponse<ChatMessageModel>
-
-    suspend fun getLatestChats(): AppResponse<List<ChatMessageModel>>
+    suspend fun sendMessage(message: String, chatRoomId: String): AppResponse<ChatMessageModel>
 
     suspend fun createChatRoom(request: ChatRoomModel): AppResponse<ChatRoomModel>
 
