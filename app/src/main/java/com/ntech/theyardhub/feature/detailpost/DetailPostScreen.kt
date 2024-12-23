@@ -25,6 +25,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ntech.theyardhub.R
+import com.ntech.theyardhub.core.ButtonHeight
+import com.ntech.theyardhub.core.ButtonType
+import com.ntech.theyardhub.core.component.GeneralButton
+import com.ntech.theyardhub.core.component.GeneralConfirmationBottomSheet
 import com.ntech.theyardhub.core.component.LoadingDialog
 import com.ntech.theyardhub.core.theme.Black
 import com.ntech.theyardhub.core.theme.Typography
@@ -32,7 +36,11 @@ import com.ntech.theyardhub.core.theme.White
 import com.ntech.theyardhub.core.utils.AppResponse
 import com.ntech.theyardhub.core.utils.LoadImageWithGlide
 import com.ntech.theyardhub.datalayer.model.PostModel
+import com.ntech.theyardhub.feature.discussion.DiscussionBottomSheet
 import com.ntech.theyardhub.feature.post.PostViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -76,12 +84,37 @@ fun DetailPostScreen(navController: NavController, postId: String) {
 
     val scrollState = rememberScrollState()
 
+    val showSheetDiscussion = remember { mutableStateOf(false) }
+
+
+    if (showSheetDiscussion.value) {
+        DiscussionBottomSheet(onDismiss = { showSheetDiscussion.value = false }, postId = postId)
+    }
+
     Scaffold(
-        containerColor = White
+        containerColor = White,
+        bottomBar = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                GeneralButton(
+                    onButtonClicked = {
+                        showSheetDiscussion.value = true
+                    },
+                    label = "Create Product",
+                    buttonType = ButtonType.PRIMARY,
+                    buttonHeight = ButtonHeight.MEDIUM,
+                    isEnabled = true,
+                )
+            }
+        },
     ) { innerPadding ->
         Column(
             verticalArrangement = Arrangement.Top,
             modifier = Modifier
+                .padding(bottom = innerPadding.calculateBottomPadding())
                 .fillMaxSize()
                 .verticalScroll(scrollState)
         ) {

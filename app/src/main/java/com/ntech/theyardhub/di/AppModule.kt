@@ -20,6 +20,7 @@ import com.ntech.theyardhub.feature.createproduct.CreateProductViewModel
 import com.ntech.theyardhub.feature.detailpost.DetailPostViewModel
 import com.ntech.theyardhub.feature.detailuser.DetailUserViewModel
 import com.ntech.theyardhub.feature.detailyard.DetailYardViewModel
+import com.ntech.theyardhub.feature.discussion.DiscussionViewModel
 import com.ntech.theyardhub.feature.home.HomeViewModel
 import com.ntech.theyardhub.feature.register.RegisterViewModel
 import com.ntech.theyardhub.feature.main.MainActivityViewModel
@@ -96,4 +97,5 @@ val appModule = module {
     factory { CreateProductViewModel(get(), get()) }
     factory { RegisterYardViewModel(get(), get(), get()) }
     factory { ChatListviewModel(get(), get()) }
+    factory { DiscussionViewModel(get()) }
 }
