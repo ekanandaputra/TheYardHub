@@ -97,7 +97,7 @@ fun HomeScreen(
             TopAppBar(
                 title = {
                     Row(
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                        modifier = Modifier.padding(end = 16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
@@ -111,6 +111,7 @@ fun HomeScreen(
                         Text(
                             "YardHub",
                             modifier = Modifier
+                                .padding(start = 8.dp)
                                 .weight(1f),
                             style = Typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold)
                         )
