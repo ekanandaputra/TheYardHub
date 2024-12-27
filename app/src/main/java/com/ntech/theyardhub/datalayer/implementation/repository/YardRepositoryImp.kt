@@ -32,16 +32,31 @@ class YardRepositoryImp(
                     return@withContext AppResponse.Empty
                 } else {
                     val list = querySnapshot.documents.map { document ->
-                        val name = document.get("name") as? String ?: ""
-                        val desc = document.get("desc") as? String ?: ""
-                        val city = document.get("city") as? String ?: ""
-                        val documentId = document.id // Retrieve document ID
+                        val name: String = document?.getString("name") ?: ""
+                        val thumbnail: String = document?.getString("thumbnail") ?: ""
+                        val description: String = document?.getString("description") ?: ""
+                        val userDocumentId: String = document?.getString("userDocumentId") ?: ""
+                        val locationData = document?.get("locationModel") as? Map<*, *>
+                        val ownerName: String = document?.getString("ownerName") ?: ""
+                        val documentId = document.id
+
+                        val locationModel = if (locationData != null) {
+                            LocationModel(
+                                latitude = locationData["latitude"] as? Double ?: 0.0,
+                                longitude = locationData["longitude"] as? Double ?: 0.0
+                            )
+                        } else {
+                            LocationModel()
+                        }
 
                         YardModel(
                             name = name,
-                            description = desc,
-                            locationModel = LocationModel(city = city),
+                            thumbnail = thumbnail,
+                            description = description,
+                            locationModel = locationModel,
                             documentId = documentId,
+                            userDocumentId = userDocumentId,
+                            ownerName = ownerName,
                         )
                     }
                     return@withContext AppResponse.Success(list)
@@ -66,7 +81,7 @@ class YardRepositoryImp(
                     val locationData = querySnapshot?.get("locationModel") as? Map<*, *>
                     val ownerName: String = querySnapshot?.getString("ownerName") ?: ""
 
-// Map the locationModel if it exists
+                    // Map the locationModel if it exists
                     val locationModel = if (locationData != null) {
                         LocationModel(
                             latitude = locationData["latitude"] as? Double ?: 0.0,
