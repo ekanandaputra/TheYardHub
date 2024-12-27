@@ -315,9 +315,10 @@ fun YardHomeItem(item: YardModel, onClickItem: (YardModel) -> Unit) {
                 model = item.thumbnail,
                 contentDescription = "Image from URL",
                 modifier = Modifier
+                    .height(128.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .background(color = Color.Black),
-                contentScale = ContentScale.Fit
+                contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.height(8.dp))
             Column(modifier = Modifier.padding(12.dp)) {

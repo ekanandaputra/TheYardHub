@@ -62,7 +62,7 @@ fun YardCardItem(item: YardModel, onClickItem: (YardModel) -> Unit) {
                         .width(75.dp)
                         .height(75.dp)
                         .clip(RoundedCornerShape(8.dp)),
-                    contentScale = ContentScale.FillHeight
+                    contentScale = ContentScale.Crop
                 )
                 Column(modifier = Modifier.padding(start = 10.dp)) {
                     Text(
