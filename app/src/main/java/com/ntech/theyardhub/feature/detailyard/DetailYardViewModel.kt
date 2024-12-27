@@ -51,11 +51,11 @@ class DetailYardViewModel(
         }
     }
 
-    suspend fun fetchProducts(userDocumentId: String) {
+    suspend fun fetchProducts() {
         viewModelScope.launch {
             _productsLiveData.apply {
                 postValue(AppResponse.Loading)
-                val result = productRepository.getProductsByUserId(userDocumentId)
+                val result = productRepository.getProductsByUserId(dataStorage.userDocumentId)
                 postValue(result)
             }
         }

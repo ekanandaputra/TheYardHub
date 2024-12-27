@@ -103,7 +103,7 @@ fun DetailPostScreen(navController: NavController, postId: String) {
                     onButtonClicked = {
                         showSheetDiscussion.value = true
                     },
-                    label = "Create Product",
+                    label = "Discussion",
                     buttonType = ButtonType.PRIMARY,
                     buttonHeight = ButtonHeight.MEDIUM,
                     isEnabled = true,

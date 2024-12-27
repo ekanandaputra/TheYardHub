@@ -44,7 +44,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.ntech.theyardhub.R
+import com.ntech.theyardhub.core.RouteName
 import com.ntech.theyardhub.core.RouteName.CHAT_LIST_SCREEN
+import com.ntech.theyardhub.core.RouteName.DETAIL_POST_SCREEN
 import com.ntech.theyardhub.core.RouteName.DETAIL_YARD_SCREEN
 import com.ntech.theyardhub.core.theme.Black
 import com.ntech.theyardhub.core.theme.Gray
@@ -56,17 +58,23 @@ import com.ntech.theyardhub.core.utils.RoundedImageExample
 import com.ntech.theyardhub.datalayer.model.LocationModel
 import com.ntech.theyardhub.datalayer.model.PostModel
 import com.ntech.theyardhub.datalayer.model.YardModel
+import com.ntech.theyardhub.feature.main.MainActivityViewModel
+import com.ntech.weedwhiz.feature.bottomnavigation.BottomNavItem
 import org.koin.androidx.compose.get
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController) {
-
-    var itemsList = arrayListOf<PostModel>()
-    var yardList = arrayListOf<YardModel>()
+fun HomeScreen(
+    navController: NavController,
+    onSeeAllYardClicked: () -> Unit,
+    onSeeAllArticleClicked: () -> Unit,
+) {
+    val itemsList = arrayListOf<PostModel>()
+    val yardList = arrayListOf<YardModel>()
 
     val viewModel: HomeViewModel = get()
+    val mainActivityViewModel: MainActivityViewModel = get()
 
     LaunchedEffect(Unit) {
         viewModel.fetchPosts()
@@ -74,37 +82,14 @@ fun HomeScreen(navController: NavController) {
     }
 
     val postState = viewModel.postLiveData.observeAsState().value
-
-    when (postState) {
-        is AppResponse.Loading -> {
-        }
-
-        is AppResponse.Empty -> {
-        }
-
-        is AppResponse.Success -> {
-            itemsList = postState.data as ArrayList<PostModel>
-        }
-
-        else -> {
-        }
-    }
-
     val yardState = viewModel.yardLiveData.observeAsState().value
 
-    when (yardState) {
-        is AppResponse.Loading -> {
-        }
+    if (postState is AppResponse.Success) {
+        itemsList.addAll(postState.data.filterNot { it in itemsList })
+    }
 
-        is AppResponse.Empty -> {
-        }
-
-        is AppResponse.Success -> {
-            yardList = yardState.data as ArrayList<YardModel>
-        }
-
-        else -> {
-        }
+    if (yardState is AppResponse.Success) {
+        yardList.addAll(yardState.data.filterNot { it in yardList })
     }
 
     Scaffold(
@@ -112,6 +97,7 @@ fun HomeScreen(navController: NavController) {
             TopAppBar(
                 title = {
                     Row(
+                        modifier = Modifier.padding(horizontal = 16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
@@ -125,7 +111,6 @@ fun HomeScreen(navController: NavController) {
                         Text(
                             "YardHub",
                             modifier = Modifier
-                                .padding(start = 8.dp)
                                 .weight(1f),
                             style = Typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold)
                         )
@@ -158,20 +143,38 @@ fun HomeScreen(navController: NavController) {
                     end = 16.dp
                 ),
         ) {
-            HeaderHome()
+            HeaderHome(viewModel.userName)
             Spacer(modifier = Modifier.height(32.dp))
-            ProductHome(yardList)
+            ProductHome(
+                yardList,
+                onSeeAllClicked = {
+                    onSeeAllYardClicked.invoke()
+                    navController.navigate(RouteName.YARD_SCREEN)
+                },
+                onClickItem = {
+                    navController.navigate("$DETAIL_YARD_SCREEN/${it.documentId}")
+                }
+            )
             Spacer(modifier = Modifier.height(32.dp))
-            ArticleHome(itemsList)
+            ArticleHome(
+                itemsList,
+                onSeeAllClicked = {
+                    onSeeAllArticleClicked.invoke()
+                    navController.navigate(RouteName.POST_SCREEN)
+                },
+                onClickItem = {
+                    navController.navigate("$DETAIL_POST_SCREEN/${it.documentId}")
+                }
+            )
         }
     }
 }
 
 @Composable
-fun HeaderHome() {
+fun HeaderHome(name: String) {
     Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
         Column {
-            Text(text = "Hello Ekananda", style = Typography.titleMedium)
+            Text(text = "Hello " + name, style = Typography.titleMedium)
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "We bring the best for you",
@@ -186,7 +189,12 @@ fun HeaderHome() {
 }
 
 @Composable
-fun ArticleHome(itemsList: ArrayList<PostModel>) {
+fun ArticleHome(
+    itemsList: ArrayList<PostModel>,
+    onSeeAllClicked: () -> Unit,
+    onClickItem: (PostModel) -> Unit,
+
+    ) {
     Column {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -194,7 +202,10 @@ fun ArticleHome(itemsList: ArrayList<PostModel>) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(text = "Article for You", style = Typography.titleMedium)
-            Text(text = "See all article", style = Typography.labelSmall)
+            Text(
+                text = "See all",
+                style = Typography.labelSmall,
+                modifier = Modifier.clickable { onSeeAllClicked.invoke() })
         }
         Spacer(modifier = Modifier.height(8.dp))
         LazyColumn(
@@ -203,6 +214,7 @@ fun ArticleHome(itemsList: ArrayList<PostModel>) {
             items(itemsList.size) { item ->
                 ArticleHomeItem(
                     post = itemsList[item],
+                    onClickItem = { onClickItem.invoke(it) }
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -211,7 +223,11 @@ fun ArticleHome(itemsList: ArrayList<PostModel>) {
 }
 
 @Composable
-fun ProductHome(yardList: ArrayList<YardModel>) {
+fun ProductHome(
+    yardList: ArrayList<YardModel>,
+    onSeeAllClicked: () -> Unit,
+    onClickItem: (YardModel) -> Unit,
+) {
     Column {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -219,7 +235,10 @@ fun ProductHome(yardList: ArrayList<YardModel>) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(text = "Farms", style = Typography.titleMedium)
-            Text(text = "See all", style = Typography.labelSmall)
+            Text(
+                text = "See all",
+                style = Typography.labelSmall,
+                modifier = Modifier.clickable { onSeeAllClicked.invoke() })
         }
         Spacer(modifier = Modifier.height(8.dp))
         LazyRow(
@@ -228,14 +247,16 @@ fun ProductHome(yardList: ArrayList<YardModel>) {
             contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
             items(yardList.size) { index ->
-                YardHomeItem(item = yardList[index], onClickItem = {})
+                YardHomeItem(item = yardList[index], onClickItem = { onClickItem.invoke(it) })
             }
         }
     }
 }
 
 @Composable
-fun ArticleHomeItem(post: PostModel = PostModel()) {
+fun ArticleHomeItem(
+    post: PostModel = PostModel(), onClickItem: (PostModel) -> Unit,
+) {
     Box(
         modifier = Modifier
             .border(
@@ -243,6 +264,9 @@ fun ArticleHomeItem(post: PostModel = PostModel()) {
                 shape = RoundedCornerShape(12.dp)
             )
             .padding(8.dp)
+            .clickable {
+                onClickItem.invoke(post)
+            }
     ) {
         Row(modifier = Modifier.padding(8.dp)) {
             AsyncImage(
@@ -288,7 +312,7 @@ fun YardHomeItem(item: YardModel, onClickItem: (YardModel) -> Unit) {
                 .fillMaxWidth()
         ) {
             AsyncImage(
-                model = "https://images-squarespace--cdn-com.translate.goog/content/v1/552ed2d1e4b0745abca6723d/3e60e68a-5ee9-4f49-9261-e890a6673173/grape+3.jpg?format=2500w&_x_tr_sl=en&_x_tr_tl=id&_x_tr_hl=id&_x_tr_pto=tc",
+                model = item.thumbnail,
                 contentDescription = "Image from URL",
                 modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
@@ -311,55 +335,4 @@ fun YardHomeItem(item: YardModel, onClickItem: (YardModel) -> Unit) {
             }
         }
     }
-}
-
-fun generateYardModels(): List<YardModel> {
-    val yardModels = mutableListOf<YardModel>()
-
-    yardModels.add(
-        YardModel(
-            "Kebun Anggur Makmur",
-            "",
-            "Description for Yard 1",
-            LocationModel("Jakarta", -6.2088, 106.8456),
-            "uuid-1"
-        )
-    )
-    yardModels.add(
-        YardModel(
-            "Kebun Anggur Sejahtera",
-            "",
-            "Description for Yard 2",
-            LocationModel("Bandung", -6.9175, 107.6191),
-            "uuid-2"
-        )
-    )
-    yardModels.add(
-        YardModel(
-            "Kebun Anggur A",
-            "",
-            "Description for Yard 3",
-            LocationModel("Surabaya", -7.2504, 112.7688),
-            "uuid-3"
-        )
-    )
-    yardModels.add(
-        YardModel(
-            "Kebun Anggur B",
-            "",
-            "Description for Yard 4",
-            LocationModel("Yogyakarta", -7.7956, 110.3695),
-            "uuid-4"
-        )
-    )
-    yardModels.add(
-        YardModel(
-            "Kebun Anggur D",
-            "",
-            "Description for Yard 5",
-            LocationModel("Semarang", -6.9667, 110.4167),
-            "uuid-5"
-        )
-    )
-    return yardModels
 }

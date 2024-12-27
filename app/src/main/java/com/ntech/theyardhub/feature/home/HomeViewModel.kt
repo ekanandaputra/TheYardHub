@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ntech.theyardhub.core.utils.AppResponse
+import com.ntech.theyardhub.core.utils.DataStorage
 import com.ntech.theyardhub.datalayer.model.PostModel
 import com.ntech.theyardhub.datalayer.model.YardModel
 import com.ntech.theyardhub.datalayer.repository.PostRepository
@@ -14,7 +15,10 @@ import kotlinx.coroutines.launch
 class HomeViewModel(
     private val postRepository: PostRepository,
     private val yardRepository: YardRepository,
+    private val dataStorage: DataStorage,
 ) : ViewModel() {
+
+    val userName = dataStorage.userName
 
     private val _postLiveData = MutableLiveData<AppResponse<List<PostModel>>>()
     val postLiveData: LiveData<AppResponse<List<PostModel>>> get() = _postLiveData

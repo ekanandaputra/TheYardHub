@@ -3,8 +3,10 @@ package com.ntech.theyardhub.feature.detailyard
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
@@ -45,6 +47,7 @@ import com.ntech.theyardhub.core.theme.White
 import com.ntech.theyardhub.core.theme.bluePrimary
 import com.ntech.theyardhub.core.utils.AppResponse
 import com.ntech.theyardhub.core.utils.LoadImageWithGlide
+import com.ntech.theyardhub.datalayer.model.DiscussionModel
 import com.ntech.theyardhub.datalayer.model.PostModel
 import com.ntech.theyardhub.datalayer.model.ProductModel
 import com.ntech.theyardhub.datalayer.model.UserModel
@@ -64,35 +67,29 @@ fun DetailYardScreen(navController: NavController, yardId: String) {
     val coroutineScope = rememberCoroutineScope()
     val viewModel: DetailYardViewModel = get()
     val mContext = LocalContext.current
+    val products = remember { mutableStateListOf<ProductModel>() }
 
     LaunchedEffect(Unit) {
         viewModel.fetchYard(yardId)
+        viewModel.fetchProducts()
     }
 
     val yardState = viewModel.yardLiveData.observeAsState().value
     val chatRoomId = viewModel.chatRoomId.observeAsState().value
+    val productState = viewModel.productsLiveData.observeAsState().value
 
     val showDialog = remember { mutableStateOf(false) }
 
     var data = YardModel()
 
-    when (yardState) {
-        is AppResponse.Loading -> {
-            showDialog.value = true
-        }
+    showDialog.value = yardState is AppResponse.Loading
 
-        is AppResponse.Empty -> {
-            showDialog.value = false
-        }
+    if (yardState is AppResponse.Success) {
+        data = yardState.data
+    }
 
-        is AppResponse.Success -> {
-            showDialog.value = false
-            data = yardState.data
-        }
-
-        else -> {
-            showDialog.value = false
-        }
+    if (productState is AppResponse.Success) {
+        products.addAll(productState.data.filterNot { it in products })
     }
 
     if (chatRoomId != null) {
@@ -172,7 +169,46 @@ fun DetailYardScreen(navController: NavController, yardId: String) {
                 style = Typography.bodyMedium
             )
             Spacer(modifier = Modifier.height(32.dp))
-//            DetailYardProduct(navController)
+            ProductsSection(products, navController)
+        }
+    }
+}
+
+@Composable()
+fun ProductsSection(products: List<ProductModel>, navController: NavController) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(
+                start = 16.dp,
+                end = 16.dp
+            ),
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Product",
+                style = Typography.titleMedium
+            )
+        }
+
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp)
+        ) {
+            items(products.size) { item ->
+                Box(
+                    modifier = Modifier
+                        .padding(vertical = 20.dp)
+                        .fillMaxWidth()
+                ) {
+                    ProductItem(product = products[item], onClickItem = {})
+                }
+            }
         }
     }
 }

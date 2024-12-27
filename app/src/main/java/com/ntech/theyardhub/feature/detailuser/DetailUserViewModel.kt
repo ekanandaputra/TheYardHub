@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ntech.theyardhub.core.utils.AppResponse
+import com.ntech.theyardhub.core.utils.DataStorage
 import com.ntech.theyardhub.datalayer.model.PostModel
 import com.ntech.theyardhub.datalayer.model.ProductModel
 import com.ntech.theyardhub.datalayer.model.UserModel
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
 class DetailUserViewModel(
     private val userRepository: UserRepository,
     private val productRepository: ProductRepository,
+    private val dataStorage: DataStorage,
 ) : ViewModel() {
 
     private val _userLiveData = MutableLiveData<AppResponse<UserModel>>()
@@ -37,7 +39,7 @@ class DetailUserViewModel(
         viewModelScope.launch {
             _productsLiveData.apply {
                 postValue(AppResponse.Loading)
-                val result = productRepository.getUserProducts()
+                val result = productRepository.getProductsByUserId(dataStorage.userDocumentId)
                 postValue(result)
             }
         }

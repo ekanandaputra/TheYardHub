@@ -51,38 +51,6 @@ class ProductRepositoryImpl(
         }
     }
 
-    override suspend fun getUserProducts(): AppResponse<List<ProductModel>> {
-        return withContext(Dispatchers.IO) {
-            try {
-                val querySnapshot =
-                    userRef.document(dataStorage.userDocumentId).collection("products").get()
-                        .await()
-                if (querySnapshot.isEmpty) {
-                    return@withContext AppResponse.Empty
-                } else {
-                    val list = querySnapshot.documents.map { document ->
-                        val name: String = document.getString("name") ?: ""
-                        val desc: String = document.getString("description") ?: ""
-                        val price: Long = document.getLong("price") ?: 0
-                        val imageUrl: String = document.getString("imageUrl") ?: ""
-                        val documentId = document.id // Retrieve document ID
-
-                        ProductModel(
-                            name = name,
-                            description = desc,
-                            price = price.toInt(),
-                            documentId = documentId,
-                            imageUrl = imageUrl,
-                        )
-                    }
-                    return@withContext AppResponse.Success(list)
-                }
-            } catch (e: Exception) {
-                return@withContext AppResponse.Error(e.toString())
-            }
-        }
-    }
-
     override suspend fun createUserProduct(request: ProductModel): AppResponse<ProductModel> {
         return withContext(Dispatchers.IO) {
             try {
@@ -147,6 +115,7 @@ class ProductRepositoryImpl(
                             imageUrl = imageUrl,
                         )
                     }
+                    Log.d("TAG", "getProductsByUserId: " + list)
                     return@withContext AppResponse.Success(list)
                 }
             } catch (e: Exception) {

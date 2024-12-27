@@ -50,13 +50,12 @@ import com.ntech.theyardhub.feature.register.RegisterScreen
 import com.ntech.theyardhub.feature.registeryard.RegisterYardScreen
 import com.ntech.theyardhub.feature.splash.SplashScreen
 import com.ntech.theyardhub.feature.yards.YardScreen
+import com.ntech.weedwhiz.feature.bottomnavigation.BottomNavItem
 import org.koin.androidx.compose.get
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
 
         setContent {
 
@@ -77,7 +76,10 @@ class MainActivity : ComponentActivity() {
                             LoginScreen(navController)
                         }
                         composable(HOME_SCREEN) {
-                            HomeScreen(navController)
+                            HomeScreen(
+                                navController,
+                                onSeeAllArticleClicked = { viewModel.setSelectedMenu(BottomNavItem.Article) },
+                                onSeeAllYardClicked = { viewModel.setSelectedMenu(BottomNavItem.Yard) })
                         }
                         composable(
                             route = "$CHAT_SCREEN/{roomId}",
