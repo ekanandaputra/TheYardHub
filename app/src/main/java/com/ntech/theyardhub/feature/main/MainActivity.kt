@@ -24,6 +24,7 @@ import com.ntech.theyardhub.core.RouteName.DETAIL_POST_SCREEN
 import com.ntech.theyardhub.core.RouteName.DETAIL_PRODUCT_SCREEN
 import com.ntech.theyardhub.core.RouteName.DETAIL_USER_SCREEN
 import com.ntech.theyardhub.core.RouteName.DETAIL_YARD_SCREEN
+import com.ntech.theyardhub.core.RouteName.GROUP_CHAT_SCREEN
 import com.ntech.theyardhub.core.RouteName.HOME_SCREEN
 import com.ntech.theyardhub.core.RouteName.LOGIN_SCREEN
 import com.ntech.theyardhub.core.RouteName.POST_SCREEN
@@ -51,6 +52,7 @@ import com.ntech.theyardhub.feature.registeryard.RegisterYardScreen
 import com.ntech.theyardhub.feature.splash.SplashScreen
 import com.ntech.theyardhub.feature.yards.YardScreen
 import com.ntech.theyardhub.feature.bottomnavigation.BottomNavItem
+import com.ntech.theyardhub.feature.groupchat.GroupChatScreen
 import org.koin.androidx.compose.get
 
 class MainActivity : ComponentActivity() {
@@ -70,7 +72,7 @@ class MainActivity : ComponentActivity() {
                     val currentRoute = navBackStackEntry?.destination?.route
 
                     NavHost(
-                        navController = navController, startDestination = SPLASH_SCREEN
+                        navController = navController, startDestination = GROUP_CHAT_SCREEN
                     ) {
                         composable(LOGIN_SCREEN) {
                             LoginScreen(navController)
@@ -143,6 +145,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(REGISTER_YARD_SCREEN) {
                             RegisterYardScreen(navController)
+                        }
+                        composable(GROUP_CHAT_SCREEN) {
+                            GroupChatScreen(navController)
                         }
                     }
                     Box(

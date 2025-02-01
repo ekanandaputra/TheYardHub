@@ -24,7 +24,29 @@ class GroupChatRepositoryImpl(
     private val dataStorage: DataStorage
 ) : GroupChatRepository {
     override suspend fun getGroupChatRooms(): AppResponse<List<GroupChatRoomModel>> {
-        TODO("Not yet implemented")
-    }
+        return withContext(Dispatchers.IO) {
+            try {
+                val querySnapshot =
+                    groupChatRef
+                        .get()
+                        .await()
+                Log.d("TAG", "getGroupChatRooms: " + querySnapshot.documents)
+                if (querySnapshot.isEmpty) {
+                    return@withContext AppResponse.Empty
+                } else {
+                    val list = querySnapshot.documents.map { document ->
+                        val name: String = document.getString("name") ?: ""
 
+                        GroupChatRoomModel(
+                            name = name ?: "",
+                        )
+                    }
+                    return@withContext AppResponse.Success(list)
+                }
+            } catch (e: Exception) {
+                Log.e("TAG", "getGroupChatRooms: " + e.toString())
+                return@withContext AppResponse.Error(e.toString())
+            }
+        }
+    }
 }
