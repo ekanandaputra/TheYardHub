@@ -24,13 +24,12 @@ import com.ntech.theyardhub.core.theme.Gray
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.bluePrimary
 import com.ntech.theyardhub.core.theme.bottomNavigationColor
-import com.ntech.weedwhiz.feature.bottomnavigation.BottomNavItem
 
-@Composable
+    @Composable
 fun BottomNavigationMenu(
-    navController: NavController,
-    selectedMenuState: BottomNavItem,
-    onItemClicked: (BottomNavItem) -> Unit,
+        navController: NavController,
+        selectedMenuState: BottomNavItem,
+        onItemClicked: (BottomNavItem) -> Unit,
 ) {
     val items = ArrayList<BottomNavItem>()
 

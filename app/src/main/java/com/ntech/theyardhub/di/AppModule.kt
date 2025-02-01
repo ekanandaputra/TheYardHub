@@ -2,12 +2,14 @@ package com.ntech.theyardhub.di
 
 import com.ntech.theyardhub.datalayer.di.UserModule
 import com.ntech.theyardhub.datalayer.di.ChatModule
+import com.ntech.theyardhub.datalayer.di.GroupChatModule
 import com.ntech.theyardhub.datalayer.di.PostModule
 import com.ntech.theyardhub.datalayer.di.ProductModule
 import com.ntech.theyardhub.datalayer.di.StorageModule
 import com.ntech.theyardhub.datalayer.di.YardModule
 import com.ntech.theyardhub.datalayer.implementation.repository.AuthenticationRepositoryImpl
 import com.ntech.theyardhub.datalayer.implementation.repository.ChatRepositoryImpl
+import com.ntech.theyardhub.datalayer.implementation.repository.GroupChatRepositoryImpl
 import com.ntech.theyardhub.datalayer.implementation.repository.PostRepositoryImpl
 import com.ntech.theyardhub.datalayer.implementation.repository.ProductRepositoryImpl
 import com.ntech.theyardhub.datalayer.implementation.repository.StorageRepositoryImpl
@@ -65,6 +67,10 @@ val appModule = module {
     single(named("YARD")) { YardModule.provideYardRef() }
     single { YardModule.provideYardRepository(get(named("YARD")), get(named("USER")), get()) }
 
+    // Group Chat Collection
+    single(named("GROUP_CHAT")) { GroupChatModule.provideGroupChatRef() }
+    single { GroupChatModule.provideChatRepository(get(named("GROUP_CHAT")), get()) }
+
     single { StorageModule.provideStorageRepository() }
 
     // Repository
@@ -81,6 +87,7 @@ val appModule = module {
     single { UserRepositoryImp(get(), get()) }
     single { YardRepositoryImp(get(named("YARD")), get(named("USER")), get()) }
     single { StorageRepositoryImpl() }
+    single { GroupChatRepositoryImpl(get(), get()) }
 
     // View Model
     factory { LoginViewModel(get()) }

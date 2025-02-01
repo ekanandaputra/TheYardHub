@@ -1,4 +1,4 @@
-package com.ntech.weedwhiz.feature.bottomnavigation
+package com.ntech.theyardhub.feature.bottomnavigation
 
 import com.ntech.theyardhub.R
 import com.ntech.theyardhub.core.RouteName

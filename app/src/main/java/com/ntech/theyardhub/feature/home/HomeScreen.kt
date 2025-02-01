@@ -55,11 +55,9 @@ import com.ntech.theyardhub.core.theme.White
 import com.ntech.theyardhub.core.theme.bluePrimary
 import com.ntech.theyardhub.core.utils.AppResponse
 import com.ntech.theyardhub.core.utils.RoundedImageExample
-import com.ntech.theyardhub.datalayer.model.LocationModel
 import com.ntech.theyardhub.datalayer.model.PostModel
 import com.ntech.theyardhub.datalayer.model.YardModel
 import com.ntech.theyardhub.feature.main.MainActivityViewModel
-import com.ntech.weedwhiz.feature.bottomnavigation.BottomNavItem
 import org.koin.androidx.compose.get
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

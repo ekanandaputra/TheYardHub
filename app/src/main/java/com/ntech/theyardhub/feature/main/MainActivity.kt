@@ -50,7 +50,7 @@ import com.ntech.theyardhub.feature.register.RegisterScreen
 import com.ntech.theyardhub.feature.registeryard.RegisterYardScreen
 import com.ntech.theyardhub.feature.splash.SplashScreen
 import com.ntech.theyardhub.feature.yards.YardScreen
-import com.ntech.weedwhiz.feature.bottomnavigation.BottomNavItem
+import com.ntech.theyardhub.feature.bottomnavigation.BottomNavItem
 import org.koin.androidx.compose.get
 
 class MainActivity : ComponentActivity() {
