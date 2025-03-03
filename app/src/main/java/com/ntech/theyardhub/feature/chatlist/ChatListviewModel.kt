@@ -38,4 +38,8 @@ class ChatListviewModel(
         }
     }
 
+    fun getIsGuest(): Boolean {
+        return dataStorage.isGuest
+    }
+
 }

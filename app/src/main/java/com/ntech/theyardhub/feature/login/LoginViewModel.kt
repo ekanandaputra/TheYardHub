@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ntech.theyardhub.core.utils.AppResponse
+import com.ntech.theyardhub.core.utils.DataStorage
 import com.ntech.theyardhub.datalayer.model.UserModel
 import com.ntech.theyardhub.datalayer.repository.AuthenticationRepository
 import com.ntech.theyardhub.datalayer.repository.UserRepository
@@ -14,6 +15,7 @@ import kotlinx.coroutines.launch
 
 class LoginViewModel(
     private val authenticationRepository: AuthenticationRepository,
+    private val dataStorage: DataStorage,
 ) : ViewModel() {
 
     val usernameState = mutableStateOf(TextFieldValue(""))
@@ -45,5 +47,9 @@ class LoginViewModel(
 
     private fun validateForm(): Boolean {
         return usernameState.value.text.isNotEmpty() && passwordState.value.text.isNotEmpty()
+    }
+
+    fun setIsGuest(value: Boolean) {
+        dataStorage.isGuest = value
     }
 }

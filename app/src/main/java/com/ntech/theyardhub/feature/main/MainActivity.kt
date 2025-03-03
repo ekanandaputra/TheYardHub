@@ -74,7 +74,7 @@ class MainActivity : ComponentActivity() {
                     val currentRoute = navBackStackEntry?.destination?.route
 
                     NavHost(
-                        navController = navController, startDestination = GROUP_CHAT_SCREEN
+                        navController = navController, startDestination = LOGIN_SCREEN
                     ) {
                         composable(LOGIN_SCREEN) {
                             LoginScreen(navController)

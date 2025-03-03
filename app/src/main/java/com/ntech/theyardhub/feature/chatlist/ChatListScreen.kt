@@ -2,6 +2,7 @@ package com.ntech.theyardhub.feature.chatlist
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -28,8 +29,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ntech.theyardhub.R
+import com.ntech.theyardhub.core.ButtonHeight
+import com.ntech.theyardhub.core.ButtonType
 import com.ntech.theyardhub.core.RouteName
 import com.ntech.theyardhub.core.RouteName.CHAT_SCREEN
+import com.ntech.theyardhub.core.RouteName.LOGIN_SCREEN
+import com.ntech.theyardhub.core.component.GeneralButton
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
 import com.ntech.theyardhub.core.utils.AppResponse
@@ -95,31 +100,56 @@ fun ChatListScreen(navController: NavController) {
         },
         containerColor = White,
     ) { innerPadding ->
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    start = 16.dp,
-                    end = 16.dp,
-                ),
-        ) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(
-                    bottom = 80.dp, top = innerPadding.calculateTopPadding() + 24.dp,
-                )
+        if (viewModel.getIsGuest()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                    ),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                items(chatRooms.size) { item ->
-                    ChatItem(
-                        item = chatRooms[item],
-                        onClickItem = {
-                            navController.navigate("$CHAT_SCREEN/${it.documentId}")
-                        }
+                Text(
+                    text = "Silahkan Login Terlebih Dahulu",
+                    style = Typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                GeneralButton(
+                    onButtonClicked = { navController.navigate(LOGIN_SCREEN) },
+                    label = "LOGIN",
+                    buttonType = ButtonType.PRIMARY,
+                    buttonHeight = ButtonHeight.LARGE,
+                )
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                    ),
+            ) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(
+                        bottom = 80.dp, top = innerPadding.calculateTopPadding() + 24.dp,
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
+                ) {
+                    items(chatRooms.size) { item ->
+                        ChatItem(
+                            item = chatRooms[item],
+                            onClickItem = {
+                                navController.navigate("$CHAT_SCREEN/${it.documentId}")
+                            }
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
                 }
             }
         }
+
     }
 }

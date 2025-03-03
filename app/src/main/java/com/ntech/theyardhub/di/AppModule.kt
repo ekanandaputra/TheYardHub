@@ -92,7 +92,7 @@ val appModule = module {
     single { GroupChatRepositoryImpl(get(), get()) }
 
     // View Model
-    factory { LoginViewModel(get()) }
+    factory { LoginViewModel(get(), get()) }
     factory { ChatViewModel(get()) }
     factory { PostViewModel(get()) }
     factory { DetailPostViewModel(get()) }

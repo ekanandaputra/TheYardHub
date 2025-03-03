@@ -102,9 +102,11 @@ fun LoginScreen(navController: NavController) {
                 Text(
                     text = "Don't Have An Account ? Register Here",
                     style = Typography.labelMedium,
-                    modifier = Modifier.padding(8.dp).clickable {
-                        navController.navigate(REGISTER_SCREEN)
-                    }
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .clickable {
+                            navController.navigate(REGISTER_SCREEN)
+                        }
                 )
             }
         },
@@ -147,24 +149,28 @@ fun LoginScreen(navController: NavController) {
                 visualTransformation = PasswordVisualTransformation()
             )
             Spacer(modifier = Modifier.height(32.dp))
+            GeneralButton(
+                onButtonClicked = {
+                    coroutineScope.launch {
+                        viewModel.doLogin(
+                            viewModel.usernameState.value.text,
+                            viewModel.passwordState.value.text
+                        )
+                    }
+                },
+                label = "Login",
+                buttonHeight = ButtonHeight.MEDIUM,
+                isEnabled = isButtonNextEnable,
+                buttonType = ButtonType.PRIMARY,
+            )
+            Spacer(modifier = Modifier.height(24.dp))
             Box(
-                modifier = Modifier
-                    .fillMaxWidth(0.40F)
-                    .align(Alignment.End)
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
             ) {
-                GeneralButton(
-                    onButtonClicked = {
-                        coroutineScope.launch {
-                            viewModel.doLogin(
-                                viewModel.usernameState.value.text,
-                                viewModel.passwordState.value.text
-                            )
-                        }
-                    },
-                    label = "Login",
-                    buttonType = ButtonType.PRIMARY,
-                    buttonHeight = ButtonHeight.MEDIUM,
-                    isEnabled = isButtonNextEnable,
+                Text(
+                    modifier = Modifier.clickable { navController.navigate(HOME_SCREEN) },
+                    text = "Login sebagai tamu"
                 )
             }
         }

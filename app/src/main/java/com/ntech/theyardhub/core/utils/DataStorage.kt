@@ -12,6 +12,7 @@ class DataStorage(sharedPreferences: SharedPreferences) {
         const val KEY_USER_ID = "KEY_USER_ID"
         const val KEY_USER = "KEY_USER"
         const val KEY_USER_DOCUMENT_ID = "KEY_DOCUMENT_USER_ID"
+        const val KEY_IS_GUEST = "KEY_IS_GUEST"
     }
 
     var userName: String
@@ -49,6 +50,15 @@ class DataStorage(sharedPreferences: SharedPreferences) {
         }
         set(value) {
             editor.putString(KEY_USER_DOCUMENT_ID, value)
+            editor.apply()
+        }
+
+    var isGuest: Boolean
+        get() {
+            return pref.getBoolean(KEY_IS_GUEST, true)
+        }
+        set(value) {
+            editor.putBoolean(KEY_IS_GUEST, value)
             editor.apply()
         }
 }
