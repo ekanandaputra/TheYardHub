@@ -45,4 +45,8 @@ class HomeViewModel(
             }
         }
     }
+
+    fun getIsGuest(): Boolean {
+        return dataStorage.isGuest
+    }
 }

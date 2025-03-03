@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ntech.theyardhub.core.utils.AppResponse
+import com.ntech.theyardhub.core.utils.DataStorage
 import com.ntech.theyardhub.datalayer.model.ChatMessageModel
 import com.ntech.theyardhub.datalayer.repository.ChatRepository
 import com.ntech.theyardhub.datalayer.repository.GroupChatRepository
@@ -14,6 +15,7 @@ import kotlinx.coroutines.launch
 
 class DetailGroupChatViewModel(
     private val groupChatRepository: GroupChatRepository,
+    private val dataStorage: DataStorage,
 ) : ViewModel() {
 
     val messageState = mutableStateOf(TextFieldValue(""))
@@ -47,5 +49,9 @@ class DetailGroupChatViewModel(
                 postValue(result)
             }
         }
+    }
+
+    fun getIsGuest(): Boolean {
+        return dataStorage.isGuest
     }
 }

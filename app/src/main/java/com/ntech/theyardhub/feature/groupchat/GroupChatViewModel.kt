@@ -28,4 +28,7 @@ class GroupChatViewModel(
         }
     }
 
+    fun getIsGuest(): Boolean {
+        return dataStorage.isGuest
+    }
 }

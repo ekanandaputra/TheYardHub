@@ -108,5 +108,5 @@ val appModule = module {
     factory { ChatListviewModel(get(), get()) }
     factory { DiscussionViewModel(get()) }
     factory { GroupChatViewModel(get(), get()) }
-    factory { DetailGroupChatViewModel(get()) }
+    factory { DetailGroupChatViewModel(get(), get()) }
 }

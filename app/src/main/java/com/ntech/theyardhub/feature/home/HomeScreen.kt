@@ -48,6 +48,7 @@ import com.ntech.theyardhub.core.RouteName
 import com.ntech.theyardhub.core.RouteName.CHAT_LIST_SCREEN
 import com.ntech.theyardhub.core.RouteName.DETAIL_POST_SCREEN
 import com.ntech.theyardhub.core.RouteName.DETAIL_YARD_SCREEN
+import com.ntech.theyardhub.core.RouteName.GROUP_CHAT_SCREEN
 import com.ntech.theyardhub.core.theme.Black
 import com.ntech.theyardhub.core.theme.Gray
 import com.ntech.theyardhub.core.theme.Typography
@@ -120,6 +121,17 @@ fun HomeScreen(
                                 .size(24.dp)
                                 .clickable {
                                     navController.navigate(
+                                        GROUP_CHAT_SCREEN
+                                    )
+                                }
+                        )
+                        Image(
+                            painter = sendIcon,
+                            contentDescription = "Send Icon",
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clickable {
+                                    navController.navigate(
                                         CHAT_LIST_SCREEN
                                     )
                                 }
@@ -142,7 +154,7 @@ fun HomeScreen(
                     end = 16.dp
                 ),
         ) {
-            HeaderHome(viewModel.userName)
+            HeaderHome(if (viewModel.getIsGuest()) "Guest" else viewModel.userName)
             Spacer(modifier = Modifier.height(32.dp))
             ProductHome(
                 yardList,
