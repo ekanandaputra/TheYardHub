@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ntech.theyardhub.R
+import com.ntech.theyardhub.core.RouteName.DETAIL_GROUP_CHAT_SCREEN
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
 import com.ntech.theyardhub.core.utils.AppResponse
@@ -109,7 +110,7 @@ fun GroupChatScreen(navController: NavController) {
                     GroupChatItem(
                         item = chatRooms[item],
                         onClickItem = {
-//                            navController.navigate("$CHAT_SCREEN/${it.documentId}")
+                            navController.navigate("$DETAIL_GROUP_CHAT_SCREEN/${it.documentId}")
                         }
                     )
                     Spacer(modifier = Modifier.height(16.dp))

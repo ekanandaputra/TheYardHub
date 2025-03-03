@@ -20,6 +20,7 @@ import androidx.navigation.navArgument
 import com.ntech.theyardhub.core.RouteName.CHAT_LIST_SCREEN
 import com.ntech.theyardhub.core.RouteName.CHAT_SCREEN
 import com.ntech.theyardhub.core.RouteName.CREATE_PRODUCT_SCREEN
+import com.ntech.theyardhub.core.RouteName.DETAIL_GROUP_CHAT_SCREEN
 import com.ntech.theyardhub.core.RouteName.DETAIL_POST_SCREEN
 import com.ntech.theyardhub.core.RouteName.DETAIL_PRODUCT_SCREEN
 import com.ntech.theyardhub.core.RouteName.DETAIL_USER_SCREEN
@@ -52,6 +53,7 @@ import com.ntech.theyardhub.feature.registeryard.RegisterYardScreen
 import com.ntech.theyardhub.feature.splash.SplashScreen
 import com.ntech.theyardhub.feature.yards.YardScreen
 import com.ntech.theyardhub.feature.bottomnavigation.BottomNavItem
+import com.ntech.theyardhub.feature.detailgroupchat.DetailGroupChatScreen
 import com.ntech.theyardhub.feature.groupchat.GroupChatScreen
 import org.koin.androidx.compose.get
 
@@ -148,6 +150,18 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(GROUP_CHAT_SCREEN) {
                             GroupChatScreen(navController)
+                        }
+                        composable(
+                            route = "$DETAIL_GROUP_CHAT_SCREEN/{groupChatRoomId}",
+                            arguments = listOf(navArgument("groupChatRoomId") {
+                                NavType.StringType.also {
+                                    type = it
+                                }
+                            })
+                        ) { backStackEntry ->
+                            val groupChatRoomId =
+                                backStackEntry.arguments?.getString("groupChatRoomId")
+                            DetailGroupChatScreen(navController, groupChatRoomId ?: "")
                         }
                     }
                     Box(

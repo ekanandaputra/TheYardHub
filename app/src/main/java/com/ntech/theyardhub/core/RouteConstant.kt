@@ -19,5 +19,6 @@ object RouteName {
     const val DETAIL_USER_SCREEN = "detail-user-screen"
     const val CREATE_PRODUCT_SCREEN = "create-product"
     const val GROUP_CHAT_SCREEN = "group-chat-screen"
+    const val DETAIL_GROUP_CHAT_SCREEN = "detail-group-chat-screen"
 }
 

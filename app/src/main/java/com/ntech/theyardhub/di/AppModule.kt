@@ -19,6 +19,7 @@ import com.ntech.theyardhub.feature.login.LoginViewModel
 import com.ntech.theyardhub.feature.chat.ChatViewModel
 import com.ntech.theyardhub.feature.chatlist.ChatListviewModel
 import com.ntech.theyardhub.feature.createproduct.CreateProductViewModel
+import com.ntech.theyardhub.feature.detailgroupchat.DetailGroupChatViewModel
 import com.ntech.theyardhub.feature.detailpost.DetailPostViewModel
 import com.ntech.theyardhub.feature.detailuser.DetailUserViewModel
 import com.ntech.theyardhub.feature.detailyard.DetailYardViewModel
@@ -107,4 +108,5 @@ val appModule = module {
     factory { ChatListviewModel(get(), get()) }
     factory { DiscussionViewModel(get()) }
     factory { GroupChatViewModel(get(), get()) }
+    factory { DetailGroupChatViewModel(get()) }
 }

@@ -11,4 +11,11 @@ interface GroupChatRepository {
 
     suspend fun getGroupChatRooms(): AppResponse<List<GroupChatRoomModel>>
 
+    suspend fun getMessages(groupChatRoomId: String): AppResponse<List<ChatMessageModel>>
+
+    suspend fun sendMessage(
+        groupChatRoomId: String,
+        message: String
+    ): AppResponse<ChatMessageModel>
+
 }

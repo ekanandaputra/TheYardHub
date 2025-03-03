@@ -36,8 +36,10 @@ class GroupChatRepositoryImpl(
                 } else {
                     val list = querySnapshot.documents.map { document ->
                         val name: String = document.getString("name") ?: ""
+                        val documentId = document.id // Retrieve document ID
 
                         GroupChatRoomModel(
+                            documentId = documentId,
                             name = name ?: "",
                         )
                     }
@@ -46,6 +48,70 @@ class GroupChatRepositoryImpl(
             } catch (e: Exception) {
                 Log.e("TAG", "getGroupChatRooms: " + e.toString())
                 return@withContext AppResponse.Error(e.toString())
+            }
+        }
+    }
+
+    override suspend fun getMessages(groupChatRoomId: String): AppResponse<List<ChatMessageModel>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val querySnapshot =
+                    groupChatRef.document(groupChatRoomId).collection("messages")
+//                        .orderBy("dateTime", Query.Direction.ASCENDING)
+                        .get().await()
+                if (querySnapshot.isEmpty) {
+                    return@withContext AppResponse.Empty
+                } else {
+                    val list = querySnapshot.documents.map { document ->
+
+                        val sender: String = document.getString("sender") ?: ""
+                        val senderDocumentId: String = document.getString("senderDocumentId") ?: ""
+                        val content: String = document.getString("content") ?: ""
+                        val dateTime: Timestamp =
+                            document.getTimestamp("dateTime") ?: Timestamp(0, 0)
+                        val isMyMessage = senderDocumentId == dataStorage.userDocumentId
+
+                        ChatMessageModel(
+                            sender = sender,
+                            senderDocumentId = senderDocumentId,
+                            content = content,
+                            dateTime = dateTime,
+                            isMyMessage = isMyMessage,
+                        )
+                    }
+                    return@withContext AppResponse.Success(list)
+                }
+            } catch (e: Exception) {
+                return@withContext AppResponse.Error(e.toString())
+            }
+        }
+    }
+
+    override suspend fun sendMessage(
+        groupChatRoomId: String,
+        message: String
+    ): AppResponse<ChatMessageModel> {
+        val request: ChatMessageModel = ChatMessageModel(
+            sender = dataStorage.userName,
+            senderDocumentId = dataStorage.userDocumentId,
+            content = message,
+            dateTime = Timestamp.now(),
+            isMyMessage = null,
+        )
+
+        val lastMessageRequest = mapOf(
+            "lastMessage" to message,
+            "lastMessageAt" to Timestamp.now()
+        )
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val messageRef =
+                    groupChatRef.document(groupChatRoomId).collection("messages").add(request)
+                        .await()
+                AppResponse.Success(request)
+            } catch (e: Exception) {
+                AppResponse.Error(e.toString())
             }
         }
     }

@@ -54,6 +54,7 @@ fun GroupChatItem(item: GroupChatRoomModel, onClickItem: (GroupChatRoomModel) ->
 fun GroupChatItemPreview() {
     GroupChatItem(
         item = GroupChatRoomModel(
+            documentId = "",
             name = "Diskusi A",
         ),
         onClickItem = {}
