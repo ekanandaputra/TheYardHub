@@ -32,8 +32,10 @@ import androidx.navigation.NavController
 import com.ntech.theyardhub.core.ButtonHeight
 import com.ntech.theyardhub.core.ButtonType
 import com.ntech.theyardhub.core.RouteName
+import com.ntech.theyardhub.core.RouteName.LOGIN_SCREEN
 import com.ntech.theyardhub.core.component.GeneralButton
 import com.ntech.theyardhub.core.component.LoadingDialog
+import com.ntech.theyardhub.core.component.LoginAlert
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
 import com.ntech.theyardhub.core.theme.bluePrimary
@@ -56,8 +58,10 @@ fun DetailUserScreen(navController: NavController) {
     val mContext = LocalContext.current
 
     LaunchedEffect(Unit) {
-        viewModel.fetchDetailUser()
-        viewModel.fetchUserProducts()
+        if (!viewModel.getIsGuest()) {
+            viewModel.fetchDetailUser()
+            viewModel.fetchUserProducts()
+        }
     }
 
     val userState = viewModel.userLiveData.observeAsState().value
@@ -129,58 +133,62 @@ fun DetailUserScreen(navController: NavController) {
         },
         containerColor = White
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    top = innerPadding.calculateTopPadding() + 8.dp,
-                ),
-        ) {
+        if (viewModel.getIsGuest()) {
+            LoginAlert(onButtonClicked = { navController.navigate(LOGIN_SCREEN) })
+        } else {
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
+                    .padding(
+                        top = innerPadding.calculateTopPadding() + 8.dp,
+                    ),
             ) {
-                LoadImageWithGlide(
-                    imageUrl = "https://images-squarespace--cdn-com.translate.goog/content/v1/552ed2d1e4b0745abca6723d/3e60e68a-5ee9-4f49-9261-e890a6673173/grape+3.jpg?format=2500w&_x_tr_sl=en&_x_tr_tl=id&_x_tr_hl=id&_x_tr_pto=tc",
-                    contentDescription = "",
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .width(80.dp)
-                        .height(80.dp)
-                        .clip(CircleShape)
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = data.name,
-                    style = Typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-                )
-                Spacer(modifier = Modifier.height(32.dp))
-                if (data.yard.name == "") {
-                    Box(
+                        .fillMaxWidth()
+                ) {
+                    LoadImageWithGlide(
+                        imageUrl = "https://images-squarespace--cdn-com.translate.goog/content/v1/552ed2d1e4b0745abca6723d/3e60e68a-5ee9-4f49-9261-e890a6673173/grape+3.jpg?format=2500w&_x_tr_sl=en&_x_tr_tl=id&_x_tr_hl=id&_x_tr_pto=tc",
+                        contentDescription = "",
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                    ) {
-                        GeneralButton(
-                            onButtonClicked = {
-                                navController.navigate(RouteName.REGISTER_YARD_SCREEN)
-                            },
-                            label = "Register Farm",
-                            buttonType = ButtonType.SECONDARY,
-                            buttonHeight = ButtonHeight.MEDIUM,
-                            isEnabled = true,
+                            .width(80.dp)
+                            .height(80.dp)
+                            .clip(CircleShape)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = data.name,
+                        style = Typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                    )
+                    Spacer(modifier = Modifier.height(32.dp))
+                    if (data.yard.name == "") {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                        ) {
+                            GeneralButton(
+                                onButtonClicked = {
+                                    navController.navigate(RouteName.REGISTER_YARD_SCREEN)
+                                },
+                                label = "Register Farm",
+                                buttonType = ButtonType.SECONDARY,
+                                buttonHeight = ButtonHeight.MEDIUM,
+                                isEnabled = true,
+                            )
+                        }
+                    } else {
+                        DetailYard(
+                            data.yard,
+                            products,
+                            onClickAddProduct = { navController.navigate(RouteName.CREATE_PRODUCT_SCREEN) },
+                            onClickEditDetailFarm = { navController.navigate(RouteName.REGISTER_YARD_SCREEN) },
                         )
                     }
-                } else {
-                    DetailYard(
-                        data.yard,
-                        products,
-                        onClickAddProduct = { navController.navigate(RouteName.CREATE_PRODUCT_SCREEN) },
-                        onClickEditDetailFarm = { navController.navigate(RouteName.REGISTER_YARD_SCREEN) },
-                    )
                 }
-            }
 
+            }
         }
     }
 }

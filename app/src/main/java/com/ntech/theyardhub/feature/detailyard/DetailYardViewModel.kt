@@ -145,4 +145,8 @@ class DetailYardViewModel(
             }
         }
     }
+
+    fun getIsGuest(): Boolean {
+        return dataStorage.isGuest
+    }
 }

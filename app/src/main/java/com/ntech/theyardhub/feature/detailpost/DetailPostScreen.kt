@@ -94,20 +94,22 @@ fun DetailPostScreen(navController: NavController, postId: String) {
     Scaffold(
         containerColor = White,
         bottomBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                GeneralButton(
-                    onButtonClicked = {
-                        showSheetDiscussion.value = true
-                    },
-                    label = "Discussion",
-                    buttonType = ButtonType.PRIMARY,
-                    buttonHeight = ButtonHeight.MEDIUM,
-                    isEnabled = true,
-                )
+            if (!viewModel.getIsGuest()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    GeneralButton(
+                        onButtonClicked = {
+                            showSheetDiscussion.value = true
+                        },
+                        label = "Discussion",
+                        buttonType = ButtonType.PRIMARY,
+                        buttonHeight = ButtonHeight.MEDIUM,
+                        isEnabled = true,
+                    )
+                }
             }
         },
     ) { innerPadding ->

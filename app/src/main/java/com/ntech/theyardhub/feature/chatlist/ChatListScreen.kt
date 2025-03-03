@@ -35,6 +35,7 @@ import com.ntech.theyardhub.core.RouteName
 import com.ntech.theyardhub.core.RouteName.CHAT_SCREEN
 import com.ntech.theyardhub.core.RouteName.LOGIN_SCREEN
 import com.ntech.theyardhub.core.component.GeneralButton
+import com.ntech.theyardhub.core.component.LoginAlert
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
 import com.ntech.theyardhub.core.utils.AppResponse
@@ -101,28 +102,7 @@ fun ChatListScreen(navController: NavController) {
         containerColor = White,
     ) { innerPadding ->
         if (viewModel.getIsGuest()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(
-                        start = 16.dp,
-                        end = 16.dp,
-                    ),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(
-                    text = "Silahkan Login Terlebih Dahulu",
-                    style = Typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-                )
-                Spacer(modifier = Modifier.height(24.dp))
-                GeneralButton(
-                    onButtonClicked = { navController.navigate(LOGIN_SCREEN) },
-                    label = "LOGIN",
-                    buttonType = ButtonType.PRIMARY,
-                    buttonHeight = ButtonHeight.LARGE,
-                )
-            }
+            LoginAlert(onButtonClicked = { navController.navigate(LOGIN_SCREEN) })
         } else {
             Column(
                 modifier = Modifier

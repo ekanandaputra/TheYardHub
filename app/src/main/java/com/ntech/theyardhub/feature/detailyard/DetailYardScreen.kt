@@ -128,21 +128,26 @@ fun DetailYardScreen(navController: NavController, yardId: String) {
             BottomAppBar(
                 modifier = Modifier.height(64.dp) // Adjust height as needed
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    GeneralButton(
-                        onButtonClicked = {
-                            CoroutineScope(Dispatchers.Main).launch {
-                                viewModel.getOrCreateChatRoom(data.userDocumentId, data.ownerName)
-                            }
-                        },
-                        label = "Chat with Owner",
-                        buttonType = ButtonType.PRIMARY,
-                        buttonHeight = ButtonHeight.MEDIUM,
-                        isEnabled = true,
-                    )
+                if (!viewModel.getIsGuest()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        GeneralButton(
+                            onButtonClicked = {
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    viewModel.getOrCreateChatRoom(
+                                        data.userDocumentId,
+                                        data.ownerName
+                                    )
+                                }
+                            },
+                            label = "Chat with Owner",
+                            buttonType = ButtonType.PRIMARY,
+                            buttonHeight = ButtonHeight.MEDIUM,
+                            isEnabled = true,
+                        )
+                    }
                 }
             }
         }

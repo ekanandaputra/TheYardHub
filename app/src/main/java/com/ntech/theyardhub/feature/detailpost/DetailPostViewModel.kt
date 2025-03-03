@@ -5,12 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ntech.theyardhub.core.utils.AppResponse
+import com.ntech.theyardhub.core.utils.DataStorage
 import com.ntech.theyardhub.datalayer.model.PostModel
 import com.ntech.theyardhub.datalayer.repository.PostRepository
 import kotlinx.coroutines.launch
 
 class DetailPostViewModel(
     private val postRepository: PostRepository,
+    private val dataStorage: DataStorage,
 ) : ViewModel() {
 
     private val _postLiveData = MutableLiveData<AppResponse<PostModel>>()
@@ -24,5 +26,9 @@ class DetailPostViewModel(
                 postValue(result)
             }
         }
+    }
+
+    fun getIsGuest(): Boolean {
+        return dataStorage.isGuest
     }
 }

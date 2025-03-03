@@ -95,7 +95,7 @@ val appModule = module {
     factory { LoginViewModel(get(), get()) }
     factory { ChatViewModel(get()) }
     factory { PostViewModel(get()) }
-    factory { DetailPostViewModel(get()) }
+    factory { DetailPostViewModel(get(), get()) }
     factory { DetailYardViewModel(get(), get(), get(), get()) }
     factory { ProductViewModel(get()) }
     factory { RegisterViewModel(get()) }

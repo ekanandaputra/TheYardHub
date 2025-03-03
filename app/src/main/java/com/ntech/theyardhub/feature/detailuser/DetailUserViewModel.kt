@@ -44,4 +44,8 @@ class DetailUserViewModel(
             }
         }
     }
+
+    fun getIsGuest(): Boolean {
+        return dataStorage.isGuest
+    }
 }
