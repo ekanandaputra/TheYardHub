@@ -102,6 +102,8 @@ fun HomeScreen(
                     ) {
                         val image: Painter = painterResource(id = R.drawable.icon)
                         val sendIcon: Painter = painterResource(id = R.drawable.send)
+                        val chatIcon: Painter = painterResource(id = R.drawable.chat)
+
                         Image(
                             painter = image,
                             contentDescription = "App Logo",
@@ -115,8 +117,8 @@ fun HomeScreen(
                             style = Typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold)
                         )
                         Image(
-                            painter = sendIcon,
-                            contentDescription = "Send Icon",
+                            painter = chatIcon,
+                            contentDescription = "Chat Icon",
                             modifier = Modifier
                                 .size(24.dp)
                                 .clickable {
