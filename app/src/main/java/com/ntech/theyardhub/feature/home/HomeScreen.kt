@@ -127,6 +127,7 @@ fun HomeScreen(
                                     )
                                 }
                         )
+                        Spacer(modifier = Modifier.width(16.dp))
                         Image(
                             painter = sendIcon,
                             contentDescription = "Send Icon",

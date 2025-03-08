@@ -3,6 +3,7 @@ package com.ntech.theyardhub.feature.groupchat
 import android.annotation.SuppressLint
 import android.widget.Space
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,7 +14,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -21,6 +26,8 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
@@ -70,6 +77,14 @@ fun GroupChatScreen(navController: NavController) {
         }
     }
 
+    val showSheetCreateGroupChat = remember { mutableStateOf(false) }
+
+    if (showSheetCreateGroupChat.value) {
+        CreateGroupChatBottomSheet(onDismiss = {
+            showSheetCreateGroupChat.value = false
+        })
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -84,9 +99,20 @@ fun GroupChatScreen(navController: NavController) {
                         Spacer(modifier = Modifier.width(16.dp))
                         Text(
                             "Discussion Rooms",
-                            modifier = Modifier.padding(start = 16.dp),
+                            modifier = Modifier
+                                .padding(start = 16.dp)
+                                .weight(1f),
                             style = Typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold)
                         )
+                        if (!viewModel.getIsGuest()) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "Add",
+                                modifier = Modifier
+                                    .clickable { showSheetCreateGroupChat.value = true }
+                                    .padding(end = 16.dp)
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

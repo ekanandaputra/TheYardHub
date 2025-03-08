@@ -115,4 +115,22 @@ class GroupChatRepositoryImpl(
             }
         }
     }
+
+    override suspend fun createChatRoom(roomName: String): AppResponse<GroupChatRoomModel> {
+        val request: GroupChatRoomModel = GroupChatRoomModel(
+            name = roomName,
+            documentId = "",
+        )
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val messageRef =
+                    groupChatRef.add(request)
+                        .await()
+                AppResponse.Success(request)
+            } catch (e: Exception) {
+                AppResponse.Error(e.toString())
+            }
+        }
+    }
 }

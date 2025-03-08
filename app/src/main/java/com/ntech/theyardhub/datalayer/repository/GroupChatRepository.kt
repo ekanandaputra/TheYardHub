@@ -18,4 +18,6 @@ interface GroupChatRepository {
         message: String
     ): AppResponse<ChatMessageModel>
 
+    suspend fun createChatRoom(roomName: String): AppResponse<GroupChatRoomModel>
+
 }
