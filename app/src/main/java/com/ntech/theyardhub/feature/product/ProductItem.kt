@@ -46,7 +46,7 @@ fun ProductItem(product: ProductModel, onClickItem: (ProductModel) -> Unit) {
                 .fillMaxWidth()
         ) {
             AsyncImage(
-                model = product.imageUrl,
+                model = if (product.images.isNotEmpty()) product.images.first() else product.imageUrl,
                 contentDescription = "Image from URL",
                 modifier = Modifier
                     .height(90.dp)

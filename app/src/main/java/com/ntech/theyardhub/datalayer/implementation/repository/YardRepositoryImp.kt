@@ -35,6 +35,8 @@ class YardRepositoryImp(
                         val name: String = document?.getString("name") ?: ""
                         val thumbnail: String = document?.getString("thumbnail") ?: ""
                         val description: String = document?.getString("description") ?: ""
+                        val address: String = document?.getString("address") ?: ""
+                        val phoneNumber: String = document?.getString("phoneNumber") ?: ""
                         val userDocumentId: String = document?.getString("userDocumentId") ?: ""
                         val locationData = document?.get("locationModel") as? Map<*, *>
                         val ownerName: String = document?.getString("ownerName") ?: ""
@@ -53,6 +55,8 @@ class YardRepositoryImp(
                             name = name,
                             thumbnail = thumbnail,
                             description = description,
+                            address = address,
+                            phoneNumber = phoneNumber,
                             locationModel = locationModel,
                             documentId = documentId,
                             userDocumentId = userDocumentId,
@@ -77,6 +81,8 @@ class YardRepositoryImp(
                     val name: String = querySnapshot?.getString("name") ?: ""
                     val thumbnail: String = querySnapshot?.getString("thumbnail") ?: ""
                     val description: String = querySnapshot?.getString("description") ?: ""
+                    val address: String = querySnapshot?.getString("address") ?: ""
+                    val phoneNumber: String = querySnapshot?.getString("phoneNumber") ?: ""
                     val userDocumentId: String = querySnapshot?.getString("userDocumentId") ?: ""
                     val locationData = querySnapshot?.get("locationModel") as? Map<*, *>
                     val ownerName: String = querySnapshot?.getString("ownerName") ?: ""
@@ -97,6 +103,8 @@ class YardRepositoryImp(
                             name = name,
                             thumbnail = thumbnail,
                             description = description,
+                            address = address,
+                            phoneNumber = phoneNumber,
                             locationModel = locationModel,
                             documentId = documentId,
                             userDocumentId = userDocumentId,
@@ -124,6 +132,8 @@ class YardRepositoryImp(
                     val name: String = document?.getString("name") ?: ""
                     val thumbnail: String = document?.getString("thumbnail") ?: ""
                     val description: String = document?.getString("description") ?: ""
+                    val address: String = document?.getString("address") ?: ""
+                    val phoneNumber: String = document?.getString("phoneNumber") ?: ""
                     val documentId: String = document?.id ?: ""
                     val userDocumentId: String = document?.getString("userDocumentId") ?: ""
                     val locationData = document?.get("locationModel") as? Map<*, *>
@@ -144,6 +154,8 @@ class YardRepositoryImp(
                             name = name,
                             thumbnail = thumbnail,
                             description = description,
+                            address = address,
+                            phoneNumber = phoneNumber,
                             locationModel = locationModel,
                             documentId = documentId,
                             userDocumentId = userDocumentId

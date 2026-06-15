@@ -92,9 +92,14 @@ class PostRepositoryImpl(
                         val content: String = document.getString("content") ?: ""
                         val dateTime: Timestamp =
                             document.getTimestamp("dateTime") ?: Timestamp(0, 0)
+                        val parentCommentId = document.getString("parentCommentId")
+                        val replyToName = document.getString("replyToName")
                         val isMyMessage = senderDocumentId == dataStorage.userDocumentId
 
                         DiscussionModel(
+                            documentId = document.id,
+                            parentCommentId = parentCommentId,
+                            replyToName = replyToName,
                             sender = sender,
                             senderDocumentId = senderDocumentId,
                             content = content,
@@ -112,7 +117,9 @@ class PostRepositoryImpl(
 
     override suspend fun sendDiscussion(
         postDocumentId: String,
-        message: String
+        message: String,
+        parentCommentId: String?,
+        replyToName: String?
     ): AppResponse<DiscussionModel> {
         val request: DiscussionModel = DiscussionModel(
             sender = dataStorage.userName,
@@ -120,12 +127,14 @@ class PostRepositoryImpl(
             content = message,
             dateTime = Timestamp.now(),
             isMyMessage = null,
+            parentCommentId = parentCommentId,
+            replyToName = replyToName
         )
         return withContext(Dispatchers.IO) {
             try {
                 val messageRef =
                     postRef.document(postDocumentId).collection("discussions").add(request).await()
-                AppResponse.Success(request)
+                AppResponse.Success(request.copy(documentId = messageRef.id))
             } catch (e: Exception) {
                 AppResponse.Error(e.toString())
             }

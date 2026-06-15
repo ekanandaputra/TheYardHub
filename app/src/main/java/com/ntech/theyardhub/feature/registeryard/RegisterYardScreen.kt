@@ -2,6 +2,7 @@ package com.ntech.theyardhub.feature.registeryard
 
 import android.annotation.SuppressLint
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -35,6 +36,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.ntech.theyardhub.core.ButtonHeight
@@ -42,13 +44,21 @@ import com.ntech.theyardhub.core.ButtonType
 import com.ntech.theyardhub.core.component.GeneralButton
 import com.ntech.theyardhub.core.component.LoadingDialog
 import com.ntech.theyardhub.core.component.RoundedEditField
+import com.ntech.theyardhub.core.component.SuccessDialog
+import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
 import com.ntech.theyardhub.core.utils.AppResponse
 import com.ntech.theyardhub.datalayer.model.UserModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
+import org.osmdroid.config.Configuration
+import org.osmdroid.events.MapEventsReceiver
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.MapEventsOverlay
+import org.osmdroid.views.overlay.Marker
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,6 +71,8 @@ fun RegisterYardScreen(navController: NavController) {
 
     val nameState by viewModel.nameState
     val descriptionState by viewModel.descriptionState
+    val locationState by viewModel.locationState
+
     var imageUri by remember {
         mutableStateOf<Uri?>(null)
     }
@@ -69,7 +81,10 @@ fun RegisterYardScreen(navController: NavController) {
         viewModel.fetchDetailUser()
     }
 
+    Configuration.getInstance().userAgentValue = mContext.packageName
+
     val showDialog = remember { mutableStateOf(false) }
+    val showSuccessDialog = remember { mutableStateOf(false) }
 
     var data = UserModel()
 
@@ -85,7 +100,9 @@ fun RegisterYardScreen(navController: NavController) {
         is AppResponse.Success -> {
             showDialog.value = false
             data = userState.data
-            imageUri = Uri.parse(data.yard.thumbnail)
+            if (data.yard.thumbnail.isNotEmpty()) {
+                imageUri = Uri.parse(data.yard.thumbnail)
+            }
             viewModel.setName(TextFieldValue(data.yard.name))
             viewModel.setDescription(TextFieldValue(data.yard.description))
         }
@@ -95,7 +112,38 @@ fun RegisterYardScreen(navController: NavController) {
         }
     }
 
+    when (val updateState = viewModel.updateYardLiveData.observeAsState().value) {
+        is AppResponse.Loading -> {
+            showDialog.value = true
+        }
+
+        is AppResponse.Success -> {
+            showDialog.value = false
+            showSuccessDialog.value = true
+        }
+
+        is AppResponse.Error -> {
+            showDialog.value = false
+            Toast.makeText(mContext, updateState.message, Toast.LENGTH_SHORT).show()
+        }
+
+        else -> {
+            showDialog.value = false
+        }
+    }
+
     if (showDialog.value) LoadingDialog(setShowDialog = {})
+
+    if (showSuccessDialog.value) {
+        SuccessDialog(
+            setShowDialog = { showSuccessDialog.value = it },
+            title = "Farm Registered!",
+            message = "Your farm data has been successfully saved to the hub.",
+            onDismiss = {
+                navController.popBackStack()
+            }
+        )
+    }
 
 
     val galleryLauncher = rememberLauncherForActivityResult(
@@ -124,10 +172,8 @@ fun RegisterYardScreen(navController: NavController) {
             ) {
                 GeneralButton(
                     onButtonClicked = {
-                        CoroutineScope(Dispatchers.Main).launch {
-                            imageUri?.let {
-                                viewModel.updateYard(it)
-                            }
+                        coroutineScope.launch {
+                            viewModel.updateYard(imageUri)
                         }
                     },
                     label = "Register",
@@ -189,6 +235,63 @@ fun RegisterYardScreen(navController: NavController) {
                 },
                 hint = "Enter Description",
             )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = "Farm Location",
+                style = Typography.titleMedium,
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color.LightGray)
+            ) {
+                AndroidView(
+                    factory = { context ->
+                        MapView(context).apply {
+                            setTileSource(TileSourceFactory.MAPNIK)
+                            setMultiTouchControls(true)
+                            controller.setZoom(15.0)
+                            val startPoint = GeoPoint(locationState.latitude, locationState.longitude)
+                            controller.setCenter(startPoint)
+
+                            val marker = Marker(this)
+                            marker.position = startPoint
+                            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                            marker.title = "Farm Location"
+                            overlays.add(marker)
+
+                            val mapEventsReceiver = object : MapEventsReceiver {
+                                override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {
+                                    p?.let {
+                                        viewModel.setLocation(it.latitude, it.longitude)
+                                        marker.position = it
+                                        invalidate()
+                                    }
+                                    return true
+                                }
+
+                                override fun longPressHelper(p: GeoPoint?): Boolean = false
+                            }
+                            overlays.add(MapEventsOverlay(mapEventsReceiver))
+                        }
+                    },
+                    update = { mapView ->
+                        val point = GeoPoint(locationState.latitude, locationState.longitude)
+                        mapView.controller.animateTo(point)
+                        val marker = mapView.overlays.filterIsInstance<Marker>().firstOrNull()
+                        marker?.position = point
+                        mapView.invalidate()
+                    },
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }

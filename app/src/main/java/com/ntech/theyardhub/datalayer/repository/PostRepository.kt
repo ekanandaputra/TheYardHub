@@ -16,7 +16,9 @@ interface PostRepository {
 
     suspend fun sendDiscussion(
         postDocumentId: String,
-        message: String
+        message: String,
+        parentCommentId: String? = null,
+        replyToName: String? = null
     ): AppResponse<DiscussionModel>
 
 }

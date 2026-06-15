@@ -9,11 +9,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.storage.FirebaseStorage
 import com.ntech.theyardhub.core.utils.AppResponse
-import com.ntech.theyardhub.datalayer.model.PostModel
-import com.ntech.theyardhub.datalayer.model.ProductModel
-import com.ntech.theyardhub.datalayer.model.UploadImageModel
+import com.ntech.theyardhub.datalayer.model.LocationModel
 import com.ntech.theyardhub.datalayer.model.UserModel
 import com.ntech.theyardhub.datalayer.model.YardModel
 import com.ntech.theyardhub.datalayer.repository.ProductRepository
@@ -31,6 +28,7 @@ class RegisterYardViewModel(
 
     val nameState = mutableStateOf(TextFieldValue(""))
     val descriptionState = mutableStateOf(TextFieldValue(""))
+    val locationState = mutableStateOf(LocationModel())
 
     private val _userLiveData = MutableLiveData<AppResponse<UserModel>>()
     val userLiveData: LiveData<AppResponse<UserModel>> get() = _userLiveData
@@ -43,6 +41,9 @@ class RegisterYardViewModel(
             _userLiveData.apply {
                 postValue(AppResponse.Loading)
                 val result = userRepository.getUserDetail()
+                if (result is AppResponse.Success) {
+                    locationState.value = result.data.yard.locationModel
+                }
                 postValue(result)
             }
         }
@@ -56,47 +57,47 @@ class RegisterYardViewModel(
         descriptionState.value = newValue
     }
 
-    suspend fun updateYard(imageUri: Uri) {
+    fun setLocation(latitude: Double, longitude: Double) {
+        locationState.value = locationState.value.copy(latitude = latitude, longitude = longitude)
+    }
+
+    suspend fun updateYard(imageUri: Uri?) {
         viewModelScope.launch {
             _updateYardLiveData.postValue(AppResponse.Loading)
             try {
-                // Step 1: Upload Image
-                val uploadResult = storageRepository.uploadImage(imageUri)
-                if (uploadResult is AppResponse.Success) {
-                    val imageUrl = uploadResult.data // Assume `data` contains the image URL
+                var imageUrl = ""
 
-                    // Step 2: Add imageUrl to ProductModel
-                    val request = YardModel(
-                        name = nameState.value.text,
-                        description = descriptionState.value.text,
-                        thumbnail = imageUrl.publicUrl
-                    )
-
-                    val yard = yardRepository.getFarmByUserId()
-                    Log.d("TAG", "updateYard: " + yard);
-                    if (yard is AppResponse.Empty) {
-                        Log.d("TAG", "updateYard: Create Farm")
-                        yardRepository.createFarm(request)
-                    } else {
-                        when (yard) {
-                            is AppResponse.Success -> {
-                                Log.d("TAG", "updateYard: Update Farm " + yard)
-                                yardRepository.updateFarm(yard.data.documentId, request)
-                            }
-
-                            else -> {
-
-                            }
-                        }
+                // Step 1: Upload Image if selected
+                if (imageUri != null && !imageUri.toString().startsWith("http")) {
+                    val uploadResult = storageRepository.uploadImage(imageUri)
+                    if (uploadResult is AppResponse.Success) {
+                        imageUrl = uploadResult.data.publicUrl
+                    } else if (uploadResult is AppResponse.Error) {
+                        _updateYardLiveData.postValue(AppResponse.Error(uploadResult.message))
+                        return@launch
                     }
-
-                    // Step 3: Create Product
-                    val updateYardResult = userRepository.updateYard(request)
-                    _updateYardLiveData.postValue(updateYardResult)
-
-                } else if (uploadResult is AppResponse.Error) {
-                    _updateYardLiveData.postValue(AppResponse.Error(uploadResult.message))
+                } else if (imageUri != null) {
+                    imageUrl = imageUri.toString()
                 }
+
+                // Step 2: Prepare Request
+                val request = YardModel(
+                    name = nameState.value.text,
+                    description = descriptionState.value.text,
+                    thumbnail = imageUrl,
+                    locationModel = locationState.value
+                )
+
+                val yard = yardRepository.getFarmByUserId()
+                if (yard is AppResponse.Empty) {
+                    yardRepository.createFarm(request)
+                } else if (yard is AppResponse.Success) {
+                    yardRepository.updateFarm(yard.data.documentId, request)
+                }
+
+                val updateYardResult = userRepository.updateYard(request)
+                _updateYardLiveData.postValue(updateYardResult)
+
             } catch (e: Exception) {
                 _updateYardLiveData.postValue(
                     AppResponse.Error(

@@ -1,28 +1,28 @@
 package com.ntech.theyardhub.feature.detailpost
 
 import android.annotation.SuppressLint
-import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Chat
+import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.ntech.theyardhub.R
 import com.ntech.theyardhub.core.ButtonHeight
@@ -30,13 +30,17 @@ import com.ntech.theyardhub.core.ButtonType
 import com.ntech.theyardhub.core.component.GeneralButton
 import com.ntech.theyardhub.core.component.GeneralConfirmationBottomSheet
 import com.ntech.theyardhub.core.component.LoadingDialog
+import com.ntech.theyardhub.core.component.RoundedEditField
 import com.ntech.theyardhub.core.theme.Black
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
+import com.ntech.theyardhub.core.theme.bluePrimary
 import com.ntech.theyardhub.core.utils.AppResponse
 import com.ntech.theyardhub.core.utils.LoadImageWithGlide
+import com.ntech.theyardhub.datalayer.model.DiscussionModel
 import com.ntech.theyardhub.datalayer.model.PostModel
-import com.ntech.theyardhub.feature.discussion.DiscussionBottomSheet
+import com.ntech.theyardhub.feature.discussion.DiscussionItem
+import com.ntech.theyardhub.feature.discussion.DiscussionViewModel
 import com.ntech.theyardhub.feature.post.PostViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -50,93 +54,237 @@ fun DetailPostScreen(navController: NavController, postId: String) {
 
     val coroutineScope = rememberCoroutineScope()
     val viewModel: DetailPostViewModel = get()
-    val mContext = LocalContext.current
+    val discussionViewModel: DiscussionViewModel = get()
 
     LaunchedEffect(Unit) {
         viewModel.fetchPost(postId)
+        discussionViewModel.fetchDiscussions(postId)
     }
 
     val postState = viewModel.postLiveData.observeAsState().value
+    val discussionsState = discussionViewModel.messageLiveData.observeAsState().value
+    val sendMessageState = discussionViewModel.sendMessageLiveData.observeAsState().value
+    val contentInputState by discussionViewModel.contentInputState
+    val replyingTo by discussionViewModel.replyingToState
 
     val showDialog = remember { mutableStateOf(false) }
+    val discussionsList = remember { mutableStateListOf<DiscussionModel>() }
 
     var post = PostModel("", "", "")
+    
     when (postState) {
         is AppResponse.Loading -> {
             showDialog.value = true
         }
-
-        is AppResponse.Empty -> {
-            showDialog.value = false
-        }
-
         is AppResponse.Success -> {
             showDialog.value = false
             post = postState.data
         }
-
         else -> {
             showDialog.value = false
         }
     }
 
-    if (showDialog.value) LoadingDialog(setShowDialog = {})
-
-    val scrollState = rememberScrollState()
-
-    val showSheetDiscussion = remember { mutableStateOf(false) }
-
-
-    if (showSheetDiscussion.value) {
-        DiscussionBottomSheet(onDismiss = { showSheetDiscussion.value = false }, postId = postId)
+    when (discussionsState) {
+        is AppResponse.Success -> {
+            discussionsList.clear()
+            discussionsList.addAll(discussionsState.data)
+        }
+        else -> {}
     }
+
+    LaunchedEffect(sendMessageState) {
+        if (sendMessageState is AppResponse.Success) {
+            discussionViewModel.fetchDiscussions(postId)
+            discussionViewModel.setContentInput(TextFieldValue(""))
+        }
+    }
+
+    if (showDialog.value) LoadingDialog(setShowDialog = {})
 
     Scaffold(
         containerColor = White,
         bottomBar = {
             if (!viewModel.getIsGuest()) {
-                Box(
+                Surface(
+                    color = Color.Transparent,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
+                        .padding(bottom = 16.dp)
                 ) {
-                    GeneralButton(
-                        onButtonClicked = {
-                            showSheetDiscussion.value = true
-                        },
-                        label = "Discussion",
-                        buttonType = ButtonType.PRIMARY,
-                        buttonHeight = ButtonHeight.MEDIUM,
-                        isEnabled = true,
-                    )
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        shape = RoundedCornerShape(24.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                        colors = CardDefaults.cardColors(containerColor = White)
+                    ) {
+                        Column {
+                            if (replyingTo != null) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(bluePrimary.copy(alpha = 0.05f))
+                                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "Replying to @${replyingTo?.sender}",
+                                        style = Typography.labelSmall.copy(color = bluePrimary, fontWeight = FontWeight.Bold)
+                                    )
+                                    IconButton(
+                                        onClick = { discussionViewModel.setReplyingTo(null) },
+                                        modifier = Modifier.size(20.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Close,
+                                            contentDescription = "Cancel",
+                                            tint = bluePrimary
+                                        )
+                                    }
+                                }
+                            }
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp)
+                                    .navigationBarsPadding()
+                                    .imePadding(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Box(modifier = Modifier.weight(1f)) {
+                                    androidx.compose.material3.TextField(
+                                        value = contentInputState,
+                                        onValueChange = { discussionViewModel.setContentInput(it) },
+                                        placeholder = { Text(if (replyingTo != null) "Write a reply..." else "Add a comment...") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        colors = TextFieldDefaults.colors(
+                                            focusedContainerColor = Color.Transparent,
+                                            unfocusedContainerColor = Color.Transparent,
+                                            disabledContainerColor = Color.Transparent,
+                                            focusedIndicatorColor = Color.Transparent,
+                                            unfocusedIndicatorColor = Color.Transparent
+                                        ),
+                                        textStyle = Typography.bodyMedium
+                                    )
+                                }
+                                IconButton(
+                                    onClick = {
+                                        if (contentInputState.text.isNotEmpty()) {
+                                            coroutineScope.launch {
+                                                discussionViewModel.sendMessage(postId, contentInputState.text)
+                                                discussionViewModel.setReplyingTo(null)
+                                            }
+                                        }
+                                    },
+                                    colors = IconButtonDefaults.iconButtonColors(
+                                        containerColor = bluePrimary,
+                                        contentColor = White
+                                    ),
+                                    modifier = Modifier.size(40.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.Send,
+                                        contentDescription = "Send",
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
     ) { innerPadding ->
-        Column(
-            verticalArrangement = Arrangement.Top,
+        LazyColumn(
             modifier = Modifier
-                .padding(bottom = innerPadding.calculateBottomPadding())
                 .fillMaxSize()
-                .verticalScroll(scrollState)
+                .padding(bottom = innerPadding.calculateBottomPadding())
         ) {
-            LoadImageWithGlide(
-                imageUrl = "https://images-squarespace--cdn-com.translate.goog/content/v1/552ed2d1e4b0745abca6723d/3e60e68a-5ee9-4f49-9261-e890a6673173/grape+3.jpg?format=2500w&_x_tr_sl=en&_x_tr_tl=id&_x_tr_hl=id&_x_tr_pto=tc",
-                contentDescription = "",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(240.dp)
-            )
-            Column(Modifier.padding(16.dp)) {
-                Text(
-                    text = post.title,
-                    style = Typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold)
+            item {
+                LoadImageWithGlide(
+                    imageUrl = post.thumbnail,
+                    contentDescription = "",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(260.dp)
                 )
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = post.content,
-                    style = Typography.bodyMedium
-                )
+            }
+            item {
+                Column(Modifier.padding(24.dp)) {
+                    Text(
+                        text = post.title,
+                        style = Typography.headlineMedium.copy(fontWeight = FontWeight.ExtraBold, color = Black)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = post.content,
+                        style = Typography.bodyLarge.copy(lineHeight = 24.sp, color = Black.copy(alpha = 0.8f))
+                    )
+                }
+            }
+
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp, vertical = 16.dp)
+                ) {
+                    Text(
+                        text = "Forum Discussion",
+                        style = Typography.titleMedium.copy(fontWeight = FontWeight.Bold, color = bluePrimary)
+                    )
+                }
+            }
+
+            if (discussionsList.isEmpty()) {
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(48.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.Chat,
+                            contentDescription = null,
+                            tint = Color.LightGray,
+                            modifier = Modifier.size(48.dp)
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = "No comments yet. Start the conversation!",
+                            style = Typography.bodyMedium.copy(color = Color.Gray),
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                    }
+                }
+            } else {
+                val parentComments = discussionsList.filter { it.parentCommentId == null }
+                val replies = discussionsList.filter { it.parentCommentId != null }
+                
+                parentComments.forEach { parent ->
+                    item {
+                        DiscussionItem(
+                            message = parent,
+                            onReplyClicked = { discussionViewModel.setReplyingTo(it) }
+                        )
+                    }
+                    val parentReplies = replies.filter { it.parentCommentId == parent.documentId }
+                    items(parentReplies) { reply ->
+                        DiscussionItem(
+                            message = reply,
+                            onReplyClicked = { discussionViewModel.setReplyingTo(it) }
+                        )
+                    }
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(100.dp))
             }
         }
     }

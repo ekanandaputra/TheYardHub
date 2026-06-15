@@ -32,29 +32,40 @@ class CreateProductViewModel(
     private val _createProductLiveData = MutableLiveData<AppResponse<ProductModel>>()
     val createProductLiveData: LiveData<AppResponse<ProductModel>> get() = _createProductLiveData
 
-    suspend fun uploadImageAndCreateProduct(imageUri: Uri) {
+    suspend fun uploadImagesAndCreateProduct(imageUris: List<Uri>) {
         viewModelScope.launch {
             _createProductLiveData.postValue(AppResponse.Loading)
             try {
-                // Step 1: Upload Image
-                val uploadResult = storageRepository.uploadImage(imageUri)
-                if (uploadResult is AppResponse.Success) {
-                    val imageUrl = uploadResult.data // Assume `data` contains the image URL
+                val imageUrls = mutableListOf<String>()
 
-                    // Step 2: Add imageUrl to ProductModel
-                    val request = ProductModel(
-                        name = nameState.value.text,
-                        description = descriptionState.value.text,
-                        price = priceState.value.text.toInt(),
-                        imageUrl = imageUrl.publicUrl,
-                    )
-
-                    // Step 3: Create Product
-                    val createProductResult = productRepository.createProduct(request)
-                    _createProductLiveData.postValue(createProductResult)
-                } else if (uploadResult is AppResponse.Error) {
-                    _createProductLiveData.postValue(AppResponse.Error(uploadResult.message))
+                // Step 1: Upload all images
+                for (uri in imageUris) {
+                    val uploadResult = storageRepository.uploadImage(uri)
+                    if (uploadResult is AppResponse.Success) {
+                        imageUrls.add(uploadResult.data.publicUrl)
+                    } else if (uploadResult is AppResponse.Error) {
+                        _createProductLiveData.postValue(AppResponse.Error("Failed to upload an image: ${uploadResult.message}"))
+                        return@launch
+                    }
                 }
+
+                if (imageUrls.isEmpty()) {
+                    _createProductLiveData.postValue(AppResponse.Error("At least one image is required"))
+                    return@launch
+                }
+
+                // Step 2: Add imageUrl to ProductModel
+                val request = ProductModel(
+                    name = nameState.value.text,
+                    description = descriptionState.value.text,
+                    price = priceState.value.text.toIntOrNull() ?: 0,
+                    imageUrl = imageUrls.first(),
+                    images = imageUrls
+                )
+
+                // Step 3: Create Product
+                val createProductResult = productRepository.createProduct(request)
+                _createProductLiveData.postValue(createProductResult)
             } catch (e: Exception) {
                 _createProductLiveData.postValue(
                     AppResponse.Error(

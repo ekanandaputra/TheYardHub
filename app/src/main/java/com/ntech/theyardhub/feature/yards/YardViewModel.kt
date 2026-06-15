@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ntech.theyardhub.core.utils.AppResponse
+import com.ntech.theyardhub.core.utils.DataStorage
 import com.ntech.theyardhub.datalayer.model.PostModel
 import com.ntech.theyardhub.datalayer.model.YardModel
 import com.ntech.theyardhub.datalayer.repository.PostRepository
@@ -13,6 +14,7 @@ import kotlinx.coroutines.launch
 
 class YardViewModel(
     private val yardRepository: YardRepository,
+    private val dataStorage: DataStorage,
 ) : ViewModel() {
 
     private val _yardLiveData = MutableLiveData<AppResponse<List<YardModel>>>()
@@ -23,7 +25,12 @@ class YardViewModel(
             _yardLiveData.apply {
                 postValue(AppResponse.Loading)
                 val result = yardRepository.getFarms()
-                postValue(result)
+                if (result is AppResponse.Success) {
+                    val filteredFarms = result.data.filter { it.userDocumentId != dataStorage.userDocumentId }
+                    postValue(AppResponse.Success(filteredFarms))
+                } else {
+                    postValue(result)
+                }
             }
         }
     }

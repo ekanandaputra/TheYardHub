@@ -20,5 +20,8 @@ object RouteName {
     const val CREATE_PRODUCT_SCREEN = "create-product"
     const val GROUP_CHAT_SCREEN = "group-chat-screen"
     const val DETAIL_GROUP_CHAT_SCREEN = "detail-group-chat-screen"
+    const val CART_SCREEN = "cart-screen"
+    const val ORDER_LIST_SCREEN = "order-list-screen"
+    const val ORDER_DETAIL_SCREEN = "order-detail-screen"
 }
 

@@ -5,11 +5,15 @@ import com.ntech.theyardhub.datalayer.di.ChatModule
 import com.ntech.theyardhub.datalayer.di.GroupChatModule
 import com.ntech.theyardhub.datalayer.di.PostModule
 import com.ntech.theyardhub.datalayer.di.ProductModule
+import com.ntech.theyardhub.datalayer.di.OrderModule
+import com.ntech.theyardhub.datalayer.di.CartModule
 import com.ntech.theyardhub.datalayer.di.StorageModule
 import com.ntech.theyardhub.datalayer.di.YardModule
 import com.ntech.theyardhub.datalayer.implementation.repository.AuthenticationRepositoryImpl
 import com.ntech.theyardhub.datalayer.implementation.repository.ChatRepositoryImpl
 import com.ntech.theyardhub.datalayer.implementation.repository.GroupChatRepositoryImpl
+import com.ntech.theyardhub.datalayer.implementation.repository.OrderRepositoryImpl
+import com.ntech.theyardhub.datalayer.implementation.repository.CartRepositoryImpl
 import com.ntech.theyardhub.datalayer.implementation.repository.PostRepositoryImpl
 import com.ntech.theyardhub.datalayer.implementation.repository.ProductRepositoryImpl
 import com.ntech.theyardhub.datalayer.implementation.repository.StorageRepositoryImpl
@@ -19,6 +23,7 @@ import com.ntech.theyardhub.feature.login.LoginViewModel
 import com.ntech.theyardhub.feature.chat.ChatViewModel
 import com.ntech.theyardhub.feature.chatlist.ChatListviewModel
 import com.ntech.theyardhub.feature.createproduct.CreateProductViewModel
+import com.ntech.theyardhub.feature.detailproduct.DetailProductViewModel
 import com.ntech.theyardhub.feature.detailgroupchat.DetailGroupChatViewModel
 import com.ntech.theyardhub.feature.detailpost.DetailPostViewModel
 import com.ntech.theyardhub.feature.detailuser.DetailUserViewModel
@@ -30,6 +35,8 @@ import com.ntech.theyardhub.feature.register.RegisterViewModel
 import com.ntech.theyardhub.feature.main.MainActivityViewModel
 import com.ntech.theyardhub.feature.post.PostViewModel
 import com.ntech.theyardhub.feature.product.ProductViewModel
+import com.ntech.theyardhub.feature.order.OrderViewModel
+import com.ntech.theyardhub.feature.cart.CartViewModel
 import com.ntech.theyardhub.feature.registeryard.RegisterYardViewModel
 import com.ntech.theyardhub.feature.yards.YardViewModel
 import org.koin.android.ext.koin.androidContext
@@ -73,6 +80,14 @@ val appModule = module {
     single(named("GROUP_CHAT")) { GroupChatModule.provideGroupChatRef() }
     single { GroupChatModule.provideChatRepository(get(named("GROUP_CHAT")), get()) }
 
+    // Order Collection
+    single(named("ORDER")) { OrderModule.provideOrderRef() }
+    single { OrderModule.provideOrderRepository(get(named("ORDER")), get()) }
+
+    // Cart Collection
+    single(named("CART")) { CartModule.provideCartRef() }
+    single { CartModule.provideCartRepository(get(named("CART"))) }
+
     single { StorageModule.provideStorageRepository() }
 
     // Repository
@@ -90,6 +105,8 @@ val appModule = module {
     single { YardRepositoryImp(get(named("YARD")), get(named("USER")), get()) }
     single { StorageRepositoryImpl() }
     single { GroupChatRepositoryImpl(get(), get()) }
+    single { OrderRepositoryImpl(get(named("ORDER")), get()) }
+    single { CartRepositoryImpl(get(named("CART"))) }
 
     // View Model
     factory { LoginViewModel(get(), get()) }
@@ -102,9 +119,12 @@ val appModule = module {
     factory { MainActivityViewModel() }
     factory { DetailUserViewModel(get(), get(), get()) }
     factory { HomeViewModel(get(), get(), get()) }
-    factory { YardViewModel(get()) }
+    factory { YardViewModel(get(), get()) }
     factory { CreateProductViewModel(get(), get()) }
+    factory { DetailProductViewModel(get()) }
     factory { RegisterYardViewModel(get(), get(), get()) }
+    factory { OrderViewModel(get(), get()) }
+    factory { CartViewModel(get(), get(), get()) }
     factory { ChatListviewModel(get(), get()) }
     factory { DiscussionViewModel(get()) }
     factory { GroupChatViewModel(get(), get()) }

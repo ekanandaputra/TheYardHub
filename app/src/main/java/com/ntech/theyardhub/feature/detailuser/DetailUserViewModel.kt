@@ -48,4 +48,18 @@ class DetailUserViewModel(
     fun getIsGuest(): Boolean {
         return dataStorage.isGuest
     }
+
+    fun updateUserName(name: String) {
+        viewModelScope.launch {
+            _userLiveData.apply {
+                postValue(AppResponse.Loading)
+                val result = userRepository.updateUserName(name)
+                if (result is AppResponse.Success) {
+                    fetchDetailUser()
+                } else if (result is AppResponse.Error) {
+                    postValue(AppResponse.Error(result.message))
+                }
+            }
+        }
+    }
 }

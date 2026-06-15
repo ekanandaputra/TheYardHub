@@ -41,7 +41,12 @@ class HomeViewModel(
             _yardLiveData.apply {
                 postValue(AppResponse.Loading)
                 val result = yardRepository.getFarms()
-                postValue(result)
+                if (result is AppResponse.Success) {
+                    val filteredFarms = result.data.filter { it.userDocumentId != dataStorage.userDocumentId }
+                    postValue(AppResponse.Success(filteredFarms))
+                } else {
+                    postValue(result)
+                }
             }
         }
     }

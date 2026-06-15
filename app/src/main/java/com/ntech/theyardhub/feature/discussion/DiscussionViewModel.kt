@@ -19,9 +19,14 @@ class DiscussionViewModel(
 ) : ViewModel() {
 
     val contentInputState = mutableStateOf(TextFieldValue(""))
+    val replyingToState = mutableStateOf<DiscussionModel?>(null)
 
     fun setContentInput(newValue: TextFieldValue) {
         contentInputState.value = newValue
+    }
+
+    fun setReplyingTo(discussion: DiscussionModel?) {
+        replyingToState.value = discussion
     }
 
     private val _messageLiveData = MutableLiveData<AppResponse<List<DiscussionModel>>>()
@@ -44,7 +49,12 @@ class DiscussionViewModel(
         viewModelScope.launch {
             _sendMessageLiveData.apply {
                 postValue(AppResponse.Loading)
-                val result = postRepository.sendDiscussion(postDocumentId = postId, message = message)
+                val result = postRepository.sendDiscussion(
+                    postDocumentId = postId,
+                    message = message,
+                    parentCommentId = replyingToState.value?.documentId,
+                    replyToName = replyingToState.value?.sender
+                )
                 postValue(result)
             }
         }

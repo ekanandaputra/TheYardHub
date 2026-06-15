@@ -17,6 +17,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.ntech.theyardhub.core.RouteName.CART_SCREEN
 import com.ntech.theyardhub.core.RouteName.CHAT_LIST_SCREEN
 import com.ntech.theyardhub.core.RouteName.CHAT_SCREEN
 import com.ntech.theyardhub.core.RouteName.CREATE_PRODUCT_SCREEN
@@ -28,6 +29,8 @@ import com.ntech.theyardhub.core.RouteName.DETAIL_YARD_SCREEN
 import com.ntech.theyardhub.core.RouteName.GROUP_CHAT_SCREEN
 import com.ntech.theyardhub.core.RouteName.HOME_SCREEN
 import com.ntech.theyardhub.core.RouteName.LOGIN_SCREEN
+import com.ntech.theyardhub.core.RouteName.ORDER_DETAIL_SCREEN
+import com.ntech.theyardhub.core.RouteName.ORDER_LIST_SCREEN
 import com.ntech.theyardhub.core.RouteName.POST_SCREEN
 import com.ntech.theyardhub.core.RouteName.PRODUCT_SCREEN
 import com.ntech.theyardhub.core.RouteName.REGISTER_SCREEN
@@ -52,7 +55,10 @@ import com.ntech.theyardhub.feature.register.RegisterScreen
 import com.ntech.theyardhub.feature.registeryard.RegisterYardScreen
 import com.ntech.theyardhub.feature.splash.SplashScreen
 import com.ntech.theyardhub.feature.yards.YardScreen
+import com.ntech.theyardhub.feature.order.OrderListScreen
+import com.ntech.theyardhub.feature.order.OrderDetailScreen
 import com.ntech.theyardhub.feature.bottomnavigation.BottomNavItem
+import com.ntech.theyardhub.feature.cart.CartScreen
 import com.ntech.theyardhub.feature.detailgroupchat.DetailGroupChatScreen
 import com.ntech.theyardhub.feature.groupchat.GroupChatScreen
 import org.koin.androidx.compose.get
@@ -136,11 +142,22 @@ class MainActivity : ComponentActivity() {
                         composable(YARD_SCREEN) {
                             YardScreen(navController)
                         }
-                        composable(DETAIL_PRODUCT_SCREEN) {
-                            DetailProductScreen(navController)
+                        composable(
+                            route = "$DETAIL_PRODUCT_SCREEN/{productId}",
+                            arguments = listOf(navArgument("productId") {
+                                NavType.StringType.also {
+                                    type = it
+                                }
+                            })
+                        ) { backStackEntry ->
+                            val productId = backStackEntry.arguments?.getString("productId")
+                            DetailProductScreen(navController, productId ?: "")
                         }
                         composable(CREATE_PRODUCT_SCREEN) {
                             CreateProductScreen(navController)
+                        }
+                        composable(CART_SCREEN) {
+                            CartScreen(navController)
                         }
                         composable(CHAT_LIST_SCREEN) {
                             ChatListScreen(navController)
@@ -150,6 +167,20 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(GROUP_CHAT_SCREEN) {
                             GroupChatScreen(navController)
+                        }
+                        composable(ORDER_LIST_SCREEN) {
+                            OrderListScreen(navController)
+                        }
+                        composable(
+                            route = "$ORDER_DETAIL_SCREEN/{orderId}",
+                            arguments = listOf(navArgument("orderId") {
+                                NavType.StringType.also {
+                                    type = it
+                                }
+                            })
+                        ) { backStackEntry ->
+                            val orderId = backStackEntry.arguments?.getString("orderId")
+                            OrderDetailScreen(navController, orderId ?: "")
                         }
                         composable(
                             route = "$DETAIL_GROUP_CHAT_SCREEN/{groupChatRoomId}",

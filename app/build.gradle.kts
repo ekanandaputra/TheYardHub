@@ -94,10 +94,8 @@ dependencies {
     // Coil
     implementation("io.coil-kt:coil-compose:2.4.0")
 
-    // GetStream
-//    val streamChat = "6.5.1"
-//    implementation("io.getstream:stream-chat-android-offline:$streamChat")
-//    implementation("io.getstream:stream-chat-android-compose:$streamChat")
-//
-//    implementation("androidx.compose.material:material-icons-extended:1.7.5")
+    implementation("androidx.compose.material:material-icons-extended:1.7.5")
+
+    // OpenStreetMap
+    implementation("org.osmdroid:osmdroid-android:6.1.20")
 }

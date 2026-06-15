@@ -105,6 +105,7 @@ class ProductRepositoryImpl(
                         val desc: String = document.getString("description") ?: ""
                         val price: Long = document.getLong("price") ?: 0
                         val imageUrl: String = document.getString("imageUrl") ?: ""
+                        val images = document.get("images") as? List<String> ?: emptyList()
                         val documentId = document.id // Retrieve document ID
 
                         ProductModel(
@@ -113,6 +114,7 @@ class ProductRepositoryImpl(
                             price = price.toInt(),
                             documentId = documentId,
                             imageUrl = imageUrl,
+                            images = images,
                         )
                     }
                     Log.d("TAG", "getProductsByUserId: " + list)
@@ -123,5 +125,36 @@ class ProductRepositoryImpl(
             }
         }
 
+    }
+
+    override suspend fun getProductDetail(productId: String): AppResponse<ProductModel> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val document = productRef.document(productId).get().await()
+                if (!document.exists()) {
+                    return@withContext AppResponse.Empty
+                } else {
+                    val name: String = document.getString("name") ?: ""
+                    val desc: String = document.getString("description") ?: ""
+                    val price: Long = document.getLong("price") ?: 0
+                    val imageUrl: String = document.getString("imageUrl") ?: ""
+                    val images = document.get("images") as? List<String> ?: emptyList()
+                    val documentId = document.id
+
+                    return@withContext AppResponse.Success(
+                        ProductModel(
+                            name = name,
+                            description = desc,
+                            price = price.toInt(),
+                            documentId = documentId,
+                            imageUrl = imageUrl,
+                            images = images
+                        )
+                    )
+                }
+            } catch (e: Exception) {
+                return@withContext AppResponse.Error(e.toString())
+            }
+        }
     }
 }

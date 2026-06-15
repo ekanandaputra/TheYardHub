@@ -45,6 +45,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.ntech.theyardhub.R
 import com.ntech.theyardhub.core.RouteName
+import com.ntech.theyardhub.core.RouteName.CART_SCREEN
 import com.ntech.theyardhub.core.RouteName.CHAT_LIST_SCREEN
 import com.ntech.theyardhub.core.RouteName.DETAIL_POST_SCREEN
 import com.ntech.theyardhub.core.RouteName.DETAIL_YARD_SCREEN
@@ -103,6 +104,7 @@ fun HomeScreen(
                         val image: Painter = painterResource(id = R.drawable.icon)
                         val sendIcon: Painter = painterResource(id = R.drawable.send)
                         val chatIcon: Painter = painterResource(id = R.drawable.chat)
+                        val cartIcon: Painter = painterResource(id = R.drawable.cart)
 
                         Image(
                             painter = image,
@@ -116,6 +118,18 @@ fun HomeScreen(
                                 .weight(1f),
                             style = Typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold)
                         )
+                        Image(
+                            painter = cartIcon,
+                            contentDescription = "Cart Icon",
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clickable {
+                                    navController.navigate(
+                                        CART_SCREEN
+                                    )
+                                }
+                        )
+                        Spacer(modifier = Modifier.width(16.dp))
                         Image(
                             painter = chatIcon,
                             contentDescription = "Chat Icon",
@@ -188,10 +202,10 @@ fun HomeScreen(
 fun HeaderHome(name: String) {
     Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
         Column {
-            Text(text = "Hello " + name, style = Typography.titleMedium)
+            Text(text = "Halo " + name, style = Typography.titleMedium)
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "We bring the best for you",
+                text = "Kami hadirkan yang terbaik untuk Anda",
                 style = Typography.titleMedium.copy(
                     fontWeight = FontWeight.ExtraBold,
                     color = bluePrimary
@@ -215,9 +229,9 @@ fun ArticleHome(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Article for You", style = Typography.titleMedium)
+            Text(text = "Artikel untuk Anda", style = Typography.titleMedium)
             Text(
-                text = "See all",
+                text = "Lihat semua",
                 style = Typography.labelSmall,
                 modifier = Modifier.clickable { onSeeAllClicked.invoke() })
         }
@@ -248,9 +262,9 @@ fun ProductHome(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Farms", style = Typography.titleMedium)
+            Text(text = "Lahan", style = Typography.titleMedium)
             Text(
-                text = "See all",
+                text = "Lihat semua",
                 style = Typography.labelSmall,
                 modifier = Modifier.clickable { onSeeAllClicked.invoke() })
         }
@@ -343,7 +357,7 @@ fun YardHomeItem(item: YardModel, onClickItem: (YardModel) -> Unit) {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = item.locationModel.city,
+                    text = item.locationModel.city.ifEmpty { "Kota tidak tersedia" },
                     modifier = Modifier.padding(top = 5.dp),
                     style = Typography.bodyMedium
                 )

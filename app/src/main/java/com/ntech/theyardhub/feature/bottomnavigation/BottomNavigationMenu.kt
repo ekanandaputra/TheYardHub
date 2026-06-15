@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ntech.theyardhub.core.theme.Black
@@ -74,12 +73,12 @@ fun RowScope.AddItem(
         },
         icon = {
             Icon(
-                painterResource(id = screen.icon),
+                imageVector = screen.icon,
                 tint = if (selectedMenuState == screen) bluePrimary else Gray,
                 contentDescription = screen.title,
                 modifier = Modifier
-                    .size(16.dp)
-                    .padding(bottom = 4.dp)
+                    .size(24.dp)
+                    .padding(bottom = 2.dp)
             )
         },
         selected = false,

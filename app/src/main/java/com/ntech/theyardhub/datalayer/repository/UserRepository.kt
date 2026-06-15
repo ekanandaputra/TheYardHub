@@ -14,4 +14,6 @@ interface UserRepository {
 
     suspend fun updateYard(request: YardModel): AppResponse<YardModel>
 
+    suspend fun updateUserName(name: String): AppResponse<String>
+
 }

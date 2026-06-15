@@ -6,5 +6,6 @@ data class ProductModel(
     val price: Int = 0,
     val documentId: String = "",
     var imageUrl: String = "",
+    var images: List<String> = emptyList(),
     var userDocumentId: String = "",
 )

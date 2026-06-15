@@ -3,6 +3,7 @@ package com.ntech.theyardhub.datalayer.implementation.repository
 import com.google.firebase.firestore.CollectionReference
 import com.ntech.theyardhub.core.utils.AppResponse
 import com.ntech.theyardhub.core.utils.DataStorage
+import com.ntech.theyardhub.datalayer.model.LocationModel
 import com.ntech.theyardhub.datalayer.model.PostModel
 import com.ntech.theyardhub.datalayer.model.ProductModel
 import com.ntech.theyardhub.datalayer.model.UserModel
@@ -34,6 +35,16 @@ class UserRepositoryImp(
                     val yardName: String = querySnapshot.getString("yard.name") ?: ""
                     val yardDesc: String = querySnapshot.getString("yard.description") ?: ""
                     val yardThumbnail: String = querySnapshot.getString("yard.thumbnail") ?: ""
+                    
+                    val locationData = querySnapshot.get("yard.locationModel") as? Map<*, *>
+                    val locationModel = if (locationData != null) {
+                        LocationModel(
+                            latitude = locationData["latitude"] as? Double ?: 0.0,
+                            longitude = locationData["longitude"] as? Double ?: 0.0
+                        )
+                    } else {
+                        LocationModel()
+                    }
 
                     return@withContext AppResponse.Success(
                         UserModel(
@@ -42,6 +53,7 @@ class UserRepositoryImp(
                                 name = yardName,
                                 description = yardDesc,
                                 thumbnail = yardThumbnail,
+                                locationModel = locationModel
                             )
                         )
                     )
@@ -60,6 +72,25 @@ class UserRepositoryImp(
                         .update("yard", request)
                         .addOnSuccessListener {
                             continuation.resume(AppResponse.Success(request))
+                        }
+                        .addOnFailureListener { e ->
+                            continuation.resume(AppResponse.Error(e.toString()))
+                        }
+                }
+            } catch (e: Exception) {
+                AppResponse.Error(e.toString())
+            }
+        }
+    }
+
+    override suspend fun updateUserName(name: String): AppResponse<String> {
+        return withContext(Dispatchers.IO) {
+            try {
+                suspendCoroutine<AppResponse<String>> { continuation ->
+                    userRef.document(dataStorage.userDocumentId)
+                        .update("name", name)
+                        .addOnSuccessListener {
+                            continuation.resume(AppResponse.Success(name))
                         }
                         .addOnFailureListener { e ->
                             continuation.resume(AppResponse.Error(e.toString()))
