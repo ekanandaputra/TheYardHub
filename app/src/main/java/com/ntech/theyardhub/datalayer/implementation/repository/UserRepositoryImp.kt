@@ -39,6 +39,8 @@ class UserRepositoryImp(
                     val locationData = querySnapshot.get("yard.locationModel") as? Map<*, *>
                     val locationModel = if (locationData != null) {
                         LocationModel(
+                            province = locationData["province"] as? String ?: "",
+                            city = locationData["city"] as? String ?: "",
                             latitude = locationData["latitude"] as? Double ?: 0.0,
                             longitude = locationData["longitude"] as? Double ?: 0.0
                         )

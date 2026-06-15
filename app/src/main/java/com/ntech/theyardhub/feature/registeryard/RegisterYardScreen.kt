@@ -14,8 +14,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -39,6 +49,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import androidx.core.content.ContextCompat
+import com.ntech.theyardhub.R
 import com.ntech.theyardhub.core.ButtonHeight
 import com.ntech.theyardhub.core.ButtonType
 import com.ntech.theyardhub.core.component.GeneralButton
@@ -48,6 +60,7 @@ import com.ntech.theyardhub.core.component.SuccessDialog
 import com.ntech.theyardhub.core.theme.Typography
 import com.ntech.theyardhub.core.theme.White
 import com.ntech.theyardhub.core.utils.AppResponse
+import com.ntech.theyardhub.core.utils.LocationData
 import com.ntech.theyardhub.datalayer.model.UserModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -158,7 +171,15 @@ fun RegisterYardScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Register Farm") },
+                title = { Text("Daftarkan Lahan") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                            contentDescription = "Kembali"
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = White
                 )
@@ -176,7 +197,7 @@ fun RegisterYardScreen(navController: NavController) {
                             viewModel.updateYard(imageUri)
                         }
                     },
-                    label = "Register",
+                    label = "Daftar",
                     buttonType = ButtonType.PRIMARY,
                     buttonHeight = ButtonHeight.MEDIUM,
                     isEnabled = true,
@@ -188,11 +209,9 @@ fun RegisterYardScreen(navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(
-                    top = innerPadding.calculateTopPadding() + 24.dp,
-                    start = 16.dp,
-                    end = 16.dp
-                ),
+                .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
         ) {
             Box(
                 modifier = Modifier
@@ -214,32 +233,50 @@ fun RegisterYardScreen(navController: NavController) {
                         contentScale = ContentScale.Crop
                     )
                 } else {
-                    Text(text = "Tap to select an image", color = Color.White)
+                    Text(text = "Ketuk untuk memilih gambar", color = Color.White)
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
             RoundedEditField(
-                title = "Name",
+                title = "Nama",
                 value = nameState,
                 onValueChange = { value ->
                     viewModel.setName(value)
                 },
-                hint = "Name"
+                hint = "Masukkan Nama Lahan"
             )
             Spacer(modifier = Modifier.height(16.dp))
             RoundedEditField(
-                title = "Description",
+                title = "Deskripsi",
                 value = descriptionState,
                 onValueChange = { value ->
                     viewModel.setDescription(value)
                 },
-                hint = "Enter Description",
+                hint = "Masukkan Deskripsi",
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Province Dropdown
+            ProvinceDropdown(
+                selectedProvince = locationState.province,
+                onProvinceSelected = { viewModel.setProvince(it) }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // City Dropdown
+            CityDropdown(
+                selectedCity = locationState.city,
+                cities = LocationData.citiesByProvince[locationState.province] ?: emptyList(),
+                onCitySelected = { viewModel.setCity(it) },
+                isEnabled = locationState.province.isNotEmpty()
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Farm Location",
+                text = "Lokasi Lahan",
                 style = Typography.titleMedium,
                 color = Color.Black
             )
@@ -261,9 +298,10 @@ fun RegisterYardScreen(navController: NavController) {
                             controller.setCenter(startPoint)
 
                             val marker = Marker(this)
+                            marker.icon = ContextCompat.getDrawable(context, R.drawable.ic_location_pin)
                             marker.position = startPoint
                             marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                            marker.title = "Farm Location"
+                            marker.title = "Lokasi Lahan"
                             overlays.add(marker)
 
                             val mapEventsReceiver = object : MapEventsReceiver {
@@ -292,6 +330,107 @@ fun RegisterYardScreen(navController: NavController) {
                 )
             }
             Spacer(modifier = Modifier.height(32.dp))
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ProvinceDropdown(
+    selectedProvince: String,
+    onProvinceSelected: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Column {
+        Text(
+            text = "Provinsi",
+            style = Typography.titleSmall,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded }
+        ) {
+            OutlinedTextField(
+                value = selectedProvince,
+                onValueChange = {},
+                readOnly = true,
+                placeholder = { Text("Pilih Provinsi") },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(),
+                shape = RoundedCornerShape(12.dp),
+                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
+            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                LocationData.provinces.forEach { province ->
+                    DropdownMenuItem(
+                        text = { Text(province) },
+                        onClick = {
+                            onProvinceSelected(province)
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CityDropdown(
+    selectedCity: String,
+    cities: List<String>,
+    onCitySelected: (String) -> Unit,
+    isEnabled: Boolean
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Column {
+        Text(
+            text = "Kota",
+            style = Typography.titleSmall,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        ExposedDropdownMenuBox(
+            expanded = expanded && isEnabled,
+            onExpandedChange = { if (isEnabled) expanded = !expanded }
+        ) {
+            OutlinedTextField(
+                value = if (isEnabled) selectedCity else "Pilih provinsi terlebih dahulu",
+                onValueChange = {},
+                readOnly = true,
+                enabled = isEnabled,
+                placeholder = { Text("Pilih Kota") },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(),
+                shape = RoundedCornerShape(12.dp),
+                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
+            )
+            if (isEnabled) {
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    cities.forEach { city ->
+                        DropdownMenuItem(
+                            text = { Text(city) },
+                            onClick = {
+                                onCitySelected(city)
+                                expanded = false
+                            }
+                        )
+                    }
+                }
+            }
         }
     }
 }

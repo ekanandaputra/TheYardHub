@@ -61,6 +61,14 @@ class RegisterYardViewModel(
         locationState.value = locationState.value.copy(latitude = latitude, longitude = longitude)
     }
 
+    fun setProvince(province: String) {
+        locationState.value = locationState.value.copy(province = province, city = "")
+    }
+
+    fun setCity(city: String) {
+        locationState.value = locationState.value.copy(city = city)
+    }
+
     suspend fun updateYard(imageUri: Uri?) {
         viewModelScope.launch {
             _updateYardLiveData.postValue(AppResponse.Loading)

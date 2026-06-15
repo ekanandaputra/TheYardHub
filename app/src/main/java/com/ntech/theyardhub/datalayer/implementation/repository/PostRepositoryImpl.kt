@@ -30,6 +30,7 @@ class PostRepositoryImpl(
                         val content = document.get("content") as? String ?: ""
                         val title = document.get("title") as? String ?: ""
                         val thumbnail = document.get("thumbnail") as? String ?: ""
+                        val category = document.get("category") as? String ?: "Umum"
                         val documentId = document.id // Retrieve document ID
 
                         PostModel(
@@ -37,6 +38,7 @@ class PostRepositoryImpl(
                             content = content,
                             thumbnail = thumbnail,
                             documentId = documentId,
+                            category = category,
                         )
                     }
                     return@withContext AppResponse.Success(list)
@@ -57,6 +59,7 @@ class PostRepositoryImpl(
                     val title: String = querySnapshot.getString("title") ?: ""
                     val content: String = querySnapshot.getString("content") ?: ""
                     val thumbnail: String = querySnapshot.getString("thumbnail") ?: ""
+                    val category: String = querySnapshot.getString("category") ?: "Umum"
 
                     return@withContext AppResponse.Success(
                         PostModel(
@@ -64,6 +67,7 @@ class PostRepositoryImpl(
                             title = title,
                             content = content,
                             documentId = id,
+                            category = category,
                         )
                     )
                 }

@@ -44,6 +44,8 @@ class YardRepositoryImp(
 
                         val locationModel = if (locationData != null) {
                             LocationModel(
+                                province = locationData["province"] as? String ?: "",
+                                city = locationData["city"] as? String ?: "",
                                 latitude = locationData["latitude"] as? Double ?: 0.0,
                                 longitude = locationData["longitude"] as? Double ?: 0.0
                             )
@@ -90,6 +92,8 @@ class YardRepositoryImp(
                     // Map the locationModel if it exists
                     val locationModel = if (locationData != null) {
                         LocationModel(
+                            province = locationData["province"] as? String ?: "",
+                            city = locationData["city"] as? String ?: "",
                             latitude = locationData["latitude"] as? Double ?: 0.0,
                             longitude = locationData["longitude"] as? Double ?: 0.0
                         )
@@ -141,6 +145,8 @@ class YardRepositoryImp(
                     // Map the locationModel if it exists
                     val locationModel = if (locationData != null) {
                         LocationModel(
+                            province = locationData["province"] as? String ?: "",
+                            city = locationData["city"] as? String ?: "",
                             latitude = locationData["latitude"] as? Double ?: 0.0,
                             longitude = locationData["longitude"] as? Double ?: 0.0
                         )

@@ -5,4 +5,5 @@ data class PostModel(
     val title: String = "",
     val content: String = "",
     val documentId: String = "",
+    val category: String = "Umum",
 )

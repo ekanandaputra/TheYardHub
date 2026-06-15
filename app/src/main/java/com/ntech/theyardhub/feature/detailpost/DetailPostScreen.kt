@@ -131,7 +131,7 @@ fun DetailPostScreen(navController: NavController, postId: String) {
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
-                                        text = "Replying to @${replyingTo?.sender}",
+                                        text = "Membalas @${replyingTo?.sender}",
                                         style = Typography.labelSmall.copy(color = bluePrimary, fontWeight = FontWeight.Bold)
                                     )
                                     IconButton(
@@ -159,7 +159,7 @@ fun DetailPostScreen(navController: NavController, postId: String) {
                                     androidx.compose.material3.TextField(
                                         value = contentInputState,
                                         onValueChange = { discussionViewModel.setContentInput(it) },
-                                        placeholder = { Text(if (replyingTo != null) "Write a reply..." else "Add a comment...") },
+                                        placeholder = { Text(if (replyingTo != null) "Tulis balasan..." else "Tambah komentar...") },
                                         modifier = Modifier.fillMaxWidth(),
                                         colors = TextFieldDefaults.colors(
                                             focusedContainerColor = Color.Transparent,
@@ -202,7 +202,7 @@ fun DetailPostScreen(navController: NavController, postId: String) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = innerPadding.calculateBottomPadding())
+                .padding(innerPadding)
         ) {
             item {
                 LoadImageWithGlide(
@@ -234,7 +234,7 @@ fun DetailPostScreen(navController: NavController, postId: String) {
                         .padding(horizontal = 24.dp, vertical = 16.dp)
                 ) {
                     Text(
-                        text = "Forum Discussion",
+                        text = "Forum Diskusi",
                         style = Typography.titleMedium.copy(fontWeight = FontWeight.Bold, color = bluePrimary)
                     )
                 }
@@ -256,7 +256,7 @@ fun DetailPostScreen(navController: NavController, postId: String) {
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
-                            text = "No comments yet. Start the conversation!",
+                            text = "Belum ada komentar. Mulailah percakapan!",
                             style = Typography.bodyMedium.copy(color = Color.Gray),
                             textAlign = androidx.compose.ui.text.style.TextAlign.Center
                         )

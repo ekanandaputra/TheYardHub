@@ -20,18 +20,40 @@ class YardViewModel(
     private val _yardLiveData = MutableLiveData<AppResponse<List<YardModel>>>()
     val yardLiveData: LiveData<AppResponse<List<YardModel>>> get() = _yardLiveData
 
-    suspend fun fetchYards() {
+    private var allYards: List<YardModel> = emptyList()
+
+    fun fetchYards() {
         viewModelScope.launch {
-            _yardLiveData.apply {
-                postValue(AppResponse.Loading)
-                val result = yardRepository.getFarms()
-                if (result is AppResponse.Success) {
-                    val filteredFarms = result.data.filter { it.userDocumentId != dataStorage.userDocumentId }
-                    postValue(AppResponse.Success(filteredFarms))
-                } else {
-                    postValue(result)
-                }
+            _yardLiveData.postValue(AppResponse.Loading)
+            val result = yardRepository.getFarms()
+            if (result is AppResponse.Success) {
+                allYards = result.data.filter { it.userDocumentId != dataStorage.userDocumentId }
+                _yardLiveData.postValue(AppResponse.Success(allYards))
+            } else {
+                _yardLiveData.postValue(result)
             }
+        }
+    }
+
+    fun filterYards(city: String) {
+        if (city == "Semua") {
+            _yardLiveData.postValue(AppResponse.Success(allYards))
+        } else {
+            val filtered = allYards.filter { it.locationModel.city == city }
+            _yardLiveData.postValue(AppResponse.Success(filtered))
+        }
+    }
+
+    fun searchYards(query: String) {
+        if (query.isEmpty()) {
+            _yardLiveData.postValue(AppResponse.Success(allYards))
+        } else {
+            val filtered = allYards.filter { 
+                it.name.contains(query, ignoreCase = true) || 
+                it.description.contains(query, ignoreCase = true) ||
+                it.locationModel.city.contains(query, ignoreCase = true)
+            }
+            _yardLiveData.postValue(AppResponse.Success(filtered))
         }
     }
 }

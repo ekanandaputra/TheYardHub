@@ -167,11 +167,12 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(
                     top = innerPadding.calculateTopPadding() + 24.dp,
-                    start = 16.dp,
-                    end = 16.dp
+                    bottom = 80.dp // Added padding for bottom navigation
                 ),
         ) {
-            HeaderHome(if (viewModel.getIsGuest()) "Guest" else viewModel.userName)
+            Box(Modifier.padding(horizontal = 16.dp)) {
+                HeaderHome(if (viewModel.getIsGuest()) "Guest" else viewModel.userName)
+            }
             Spacer(modifier = Modifier.height(32.dp))
             ProductHome(
                 yardList,
@@ -184,16 +185,18 @@ fun HomeScreen(
                 }
             )
             Spacer(modifier = Modifier.height(32.dp))
-            ArticleHome(
-                itemsList,
-                onSeeAllClicked = {
-                    onSeeAllArticleClicked.invoke()
-                    navController.navigate(RouteName.POST_SCREEN)
-                },
-                onClickItem = {
-                    navController.navigate("$DETAIL_POST_SCREEN/${it.documentId}")
-                }
-            )
+            Box(Modifier.padding(horizontal = 16.dp)) {
+                ArticleHome(
+                    itemsList,
+                    onSeeAllClicked = {
+                        onSeeAllArticleClicked.invoke()
+                        navController.navigate(RouteName.POST_SCREEN)
+                    },
+                    onClickItem = {
+                        navController.navigate("$DETAIL_POST_SCREEN/${it.documentId}")
+                    }
+                )
+            }
         }
     }
 }
@@ -259,7 +262,9 @@ fun ProductHome(
     Column {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(text = "Lahan", style = Typography.titleMedium)

@@ -31,6 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
+import androidx.core.content.ContextCompat
+import com.ntech.theyardhub.R
 import com.ntech.theyardhub.core.ButtonHeight
 import com.ntech.theyardhub.core.ButtonType
 import com.ntech.theyardhub.core.RouteName.CHAT_SCREEN
@@ -215,6 +217,7 @@ fun DetailYardScreen(navController: NavController, yardId: String) {
                                 controller.setCenter(point)
 
                                 val marker = Marker(this)
+                                marker.icon = ContextCompat.getDrawable(context, R.drawable.ic_location_pin)
                                 marker.position = point
                                 marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                                 overlays.add(marker)
